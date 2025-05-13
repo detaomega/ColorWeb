@@ -7,13 +7,13 @@ services:
     environment:
       - MONGO_URL=mongodb://mongo:27017/qa_game
     depends_on:
-      - mongo
+      - webproj_mongo
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     restart: unless-stopped
     
-  mongo:
+  webproj_mongo:
     image: mongo:latest
     ports:
       - "27017:27017"
