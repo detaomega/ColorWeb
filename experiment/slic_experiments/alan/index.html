@@ -1,0 +1,951 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>SLIC Parameter Experiment Results</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            .grid-container { 
+                display: grid; 
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 10px;
+                margin-top: 20px;
+            }
+            .grid-item { 
+                border: 1px solid #ddd;
+                padding: 10px;
+                text-align: center;
+            }
+            .grid-item img { 
+                max-width: 100%; 
+                height: auto;
+            }
+            .comparison-grids {
+                margin-top: 40px;
+            }
+            .comparison-grids img {
+                max-width: 100%;
+                height: auto;
+                margin-bottom: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>SLIC Parameter Experiment Results</h1>
+        
+        <h2>Comparison Grids</h2>
+        <div class="comparison-grids">
+    <img src="grid_region_size_comparison.jpg" alt="grid_region_size_comparison.jpg"><br>
+<img src="grid_ruler_comparison.jpg" alt="grid_ruler_comparison.jpg"><br>
+<img src="grid_algorithm_comparison.jpg" alt="grid_algorithm_comparison.jpg"><br>
+<img src="grid_iterations_comparison.jpg" alt="grid_iterations_comparison.jpg"><br>
+
+        </div>
+        
+        <h2>Individual Results</h2>
+        <div class="grid-container">
+    
+            <div class="grid-item">
+                <img src="MSLIC_r100_ruler10.0_iter10.jpg" alt="MSLIC_r100_ruler10.0_iter10.jpg">
+                <p>MSLIC_r100_ruler10.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r100_ruler10.0_iter20.jpg" alt="MSLIC_r100_ruler10.0_iter20.jpg">
+                <p>MSLIC_r100_ruler10.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r100_ruler10.0_iter5.jpg" alt="MSLIC_r100_ruler10.0_iter5.jpg">
+                <p>MSLIC_r100_ruler10.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r100_ruler20.0_iter10.jpg" alt="MSLIC_r100_ruler20.0_iter10.jpg">
+                <p>MSLIC_r100_ruler20.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r100_ruler20.0_iter20.jpg" alt="MSLIC_r100_ruler20.0_iter20.jpg">
+                <p>MSLIC_r100_ruler20.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r100_ruler20.0_iter5.jpg" alt="MSLIC_r100_ruler20.0_iter5.jpg">
+                <p>MSLIC_r100_ruler20.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r100_ruler40.0_iter10.jpg" alt="MSLIC_r100_ruler40.0_iter10.jpg">
+                <p>MSLIC_r100_ruler40.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r100_ruler40.0_iter20.jpg" alt="MSLIC_r100_ruler40.0_iter20.jpg">
+                <p>MSLIC_r100_ruler40.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r100_ruler40.0_iter5.jpg" alt="MSLIC_r100_ruler40.0_iter5.jpg">
+                <p>MSLIC_r100_ruler40.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r100_ruler5.0_iter10.jpg" alt="MSLIC_r100_ruler5.0_iter10.jpg">
+                <p>MSLIC_r100_ruler5.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r100_ruler5.0_iter20.jpg" alt="MSLIC_r100_ruler5.0_iter20.jpg">
+                <p>MSLIC_r100_ruler5.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r100_ruler5.0_iter5.jpg" alt="MSLIC_r100_ruler5.0_iter5.jpg">
+                <p>MSLIC_r100_ruler5.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r10_ruler10.0_iter10.jpg" alt="MSLIC_r10_ruler10.0_iter10.jpg">
+                <p>MSLIC_r10_ruler10.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r10_ruler10.0_iter20.jpg" alt="MSLIC_r10_ruler10.0_iter20.jpg">
+                <p>MSLIC_r10_ruler10.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r10_ruler10.0_iter5.jpg" alt="MSLIC_r10_ruler10.0_iter5.jpg">
+                <p>MSLIC_r10_ruler10.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r10_ruler20.0_iter10.jpg" alt="MSLIC_r10_ruler20.0_iter10.jpg">
+                <p>MSLIC_r10_ruler20.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r10_ruler20.0_iter20.jpg" alt="MSLIC_r10_ruler20.0_iter20.jpg">
+                <p>MSLIC_r10_ruler20.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r10_ruler20.0_iter5.jpg" alt="MSLIC_r10_ruler20.0_iter5.jpg">
+                <p>MSLIC_r10_ruler20.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r10_ruler40.0_iter10.jpg" alt="MSLIC_r10_ruler40.0_iter10.jpg">
+                <p>MSLIC_r10_ruler40.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r10_ruler40.0_iter20.jpg" alt="MSLIC_r10_ruler40.0_iter20.jpg">
+                <p>MSLIC_r10_ruler40.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r10_ruler40.0_iter5.jpg" alt="MSLIC_r10_ruler40.0_iter5.jpg">
+                <p>MSLIC_r10_ruler40.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r10_ruler5.0_iter10.jpg" alt="MSLIC_r10_ruler5.0_iter10.jpg">
+                <p>MSLIC_r10_ruler5.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r10_ruler5.0_iter20.jpg" alt="MSLIC_r10_ruler5.0_iter20.jpg">
+                <p>MSLIC_r10_ruler5.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r10_ruler5.0_iter5.jpg" alt="MSLIC_r10_ruler5.0_iter5.jpg">
+                <p>MSLIC_r10_ruler5.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r150_ruler10.0_iter10.jpg" alt="MSLIC_r150_ruler10.0_iter10.jpg">
+                <p>MSLIC_r150_ruler10.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r150_ruler10.0_iter20.jpg" alt="MSLIC_r150_ruler10.0_iter20.jpg">
+                <p>MSLIC_r150_ruler10.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r150_ruler10.0_iter5.jpg" alt="MSLIC_r150_ruler10.0_iter5.jpg">
+                <p>MSLIC_r150_ruler10.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r150_ruler20.0_iter10.jpg" alt="MSLIC_r150_ruler20.0_iter10.jpg">
+                <p>MSLIC_r150_ruler20.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r150_ruler20.0_iter20.jpg" alt="MSLIC_r150_ruler20.0_iter20.jpg">
+                <p>MSLIC_r150_ruler20.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r150_ruler20.0_iter5.jpg" alt="MSLIC_r150_ruler20.0_iter5.jpg">
+                <p>MSLIC_r150_ruler20.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r150_ruler40.0_iter10.jpg" alt="MSLIC_r150_ruler40.0_iter10.jpg">
+                <p>MSLIC_r150_ruler40.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r150_ruler40.0_iter20.jpg" alt="MSLIC_r150_ruler40.0_iter20.jpg">
+                <p>MSLIC_r150_ruler40.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r150_ruler40.0_iter5.jpg" alt="MSLIC_r150_ruler40.0_iter5.jpg">
+                <p>MSLIC_r150_ruler40.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r150_ruler5.0_iter10.jpg" alt="MSLIC_r150_ruler5.0_iter10.jpg">
+                <p>MSLIC_r150_ruler5.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r150_ruler5.0_iter20.jpg" alt="MSLIC_r150_ruler5.0_iter20.jpg">
+                <p>MSLIC_r150_ruler5.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r150_ruler5.0_iter5.jpg" alt="MSLIC_r150_ruler5.0_iter5.jpg">
+                <p>MSLIC_r150_ruler5.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r30_ruler10.0_iter10.jpg" alt="MSLIC_r30_ruler10.0_iter10.jpg">
+                <p>MSLIC_r30_ruler10.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r30_ruler10.0_iter20.jpg" alt="MSLIC_r30_ruler10.0_iter20.jpg">
+                <p>MSLIC_r30_ruler10.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r30_ruler10.0_iter5.jpg" alt="MSLIC_r30_ruler10.0_iter5.jpg">
+                <p>MSLIC_r30_ruler10.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r30_ruler20.0_iter10.jpg" alt="MSLIC_r30_ruler20.0_iter10.jpg">
+                <p>MSLIC_r30_ruler20.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r30_ruler20.0_iter20.jpg" alt="MSLIC_r30_ruler20.0_iter20.jpg">
+                <p>MSLIC_r30_ruler20.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r30_ruler20.0_iter5.jpg" alt="MSLIC_r30_ruler20.0_iter5.jpg">
+                <p>MSLIC_r30_ruler20.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r30_ruler40.0_iter10.jpg" alt="MSLIC_r30_ruler40.0_iter10.jpg">
+                <p>MSLIC_r30_ruler40.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r30_ruler40.0_iter20.jpg" alt="MSLIC_r30_ruler40.0_iter20.jpg">
+                <p>MSLIC_r30_ruler40.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r30_ruler40.0_iter5.jpg" alt="MSLIC_r30_ruler40.0_iter5.jpg">
+                <p>MSLIC_r30_ruler40.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r30_ruler5.0_iter10.jpg" alt="MSLIC_r30_ruler5.0_iter10.jpg">
+                <p>MSLIC_r30_ruler5.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r30_ruler5.0_iter20.jpg" alt="MSLIC_r30_ruler5.0_iter20.jpg">
+                <p>MSLIC_r30_ruler5.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r30_ruler5.0_iter5.jpg" alt="MSLIC_r30_ruler5.0_iter5.jpg">
+                <p>MSLIC_r30_ruler5.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r60_ruler10.0_iter10.jpg" alt="MSLIC_r60_ruler10.0_iter10.jpg">
+                <p>MSLIC_r60_ruler10.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r60_ruler10.0_iter20.jpg" alt="MSLIC_r60_ruler10.0_iter20.jpg">
+                <p>MSLIC_r60_ruler10.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r60_ruler10.0_iter5.jpg" alt="MSLIC_r60_ruler10.0_iter5.jpg">
+                <p>MSLIC_r60_ruler10.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r60_ruler20.0_iter10.jpg" alt="MSLIC_r60_ruler20.0_iter10.jpg">
+                <p>MSLIC_r60_ruler20.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r60_ruler20.0_iter20.jpg" alt="MSLIC_r60_ruler20.0_iter20.jpg">
+                <p>MSLIC_r60_ruler20.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r60_ruler20.0_iter5.jpg" alt="MSLIC_r60_ruler20.0_iter5.jpg">
+                <p>MSLIC_r60_ruler20.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r60_ruler40.0_iter10.jpg" alt="MSLIC_r60_ruler40.0_iter10.jpg">
+                <p>MSLIC_r60_ruler40.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r60_ruler40.0_iter20.jpg" alt="MSLIC_r60_ruler40.0_iter20.jpg">
+                <p>MSLIC_r60_ruler40.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r60_ruler40.0_iter5.jpg" alt="MSLIC_r60_ruler40.0_iter5.jpg">
+                <p>MSLIC_r60_ruler40.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r60_ruler5.0_iter10.jpg" alt="MSLIC_r60_ruler5.0_iter10.jpg">
+                <p>MSLIC_r60_ruler5.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r60_ruler5.0_iter20.jpg" alt="MSLIC_r60_ruler5.0_iter20.jpg">
+                <p>MSLIC_r60_ruler5.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="MSLIC_r60_ruler5.0_iter5.jpg" alt="MSLIC_r60_ruler5.0_iter5.jpg">
+                <p>MSLIC_r60_ruler5.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r100_ruler10.0_iter10.jpg" alt="SLICO_r100_ruler10.0_iter10.jpg">
+                <p>SLICO_r100_ruler10.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r100_ruler10.0_iter20.jpg" alt="SLICO_r100_ruler10.0_iter20.jpg">
+                <p>SLICO_r100_ruler10.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r100_ruler10.0_iter5.jpg" alt="SLICO_r100_ruler10.0_iter5.jpg">
+                <p>SLICO_r100_ruler10.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r100_ruler20.0_iter10.jpg" alt="SLICO_r100_ruler20.0_iter10.jpg">
+                <p>SLICO_r100_ruler20.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r100_ruler20.0_iter20.jpg" alt="SLICO_r100_ruler20.0_iter20.jpg">
+                <p>SLICO_r100_ruler20.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r100_ruler20.0_iter5.jpg" alt="SLICO_r100_ruler20.0_iter5.jpg">
+                <p>SLICO_r100_ruler20.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r100_ruler40.0_iter10.jpg" alt="SLICO_r100_ruler40.0_iter10.jpg">
+                <p>SLICO_r100_ruler40.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r100_ruler40.0_iter20.jpg" alt="SLICO_r100_ruler40.0_iter20.jpg">
+                <p>SLICO_r100_ruler40.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r100_ruler40.0_iter5.jpg" alt="SLICO_r100_ruler40.0_iter5.jpg">
+                <p>SLICO_r100_ruler40.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r100_ruler5.0_iter10.jpg" alt="SLICO_r100_ruler5.0_iter10.jpg">
+                <p>SLICO_r100_ruler5.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r100_ruler5.0_iter20.jpg" alt="SLICO_r100_ruler5.0_iter20.jpg">
+                <p>SLICO_r100_ruler5.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r100_ruler5.0_iter5.jpg" alt="SLICO_r100_ruler5.0_iter5.jpg">
+                <p>SLICO_r100_ruler5.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r10_ruler10.0_iter10.jpg" alt="SLICO_r10_ruler10.0_iter10.jpg">
+                <p>SLICO_r10_ruler10.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r10_ruler10.0_iter20.jpg" alt="SLICO_r10_ruler10.0_iter20.jpg">
+                <p>SLICO_r10_ruler10.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r10_ruler10.0_iter5.jpg" alt="SLICO_r10_ruler10.0_iter5.jpg">
+                <p>SLICO_r10_ruler10.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r10_ruler20.0_iter10.jpg" alt="SLICO_r10_ruler20.0_iter10.jpg">
+                <p>SLICO_r10_ruler20.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r10_ruler20.0_iter20.jpg" alt="SLICO_r10_ruler20.0_iter20.jpg">
+                <p>SLICO_r10_ruler20.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r10_ruler20.0_iter5.jpg" alt="SLICO_r10_ruler20.0_iter5.jpg">
+                <p>SLICO_r10_ruler20.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r10_ruler40.0_iter10.jpg" alt="SLICO_r10_ruler40.0_iter10.jpg">
+                <p>SLICO_r10_ruler40.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r10_ruler40.0_iter20.jpg" alt="SLICO_r10_ruler40.0_iter20.jpg">
+                <p>SLICO_r10_ruler40.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r10_ruler40.0_iter5.jpg" alt="SLICO_r10_ruler40.0_iter5.jpg">
+                <p>SLICO_r10_ruler40.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r10_ruler5.0_iter10.jpg" alt="SLICO_r10_ruler5.0_iter10.jpg">
+                <p>SLICO_r10_ruler5.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r10_ruler5.0_iter20.jpg" alt="SLICO_r10_ruler5.0_iter20.jpg">
+                <p>SLICO_r10_ruler5.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r10_ruler5.0_iter5.jpg" alt="SLICO_r10_ruler5.0_iter5.jpg">
+                <p>SLICO_r10_ruler5.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r150_ruler10.0_iter10.jpg" alt="SLICO_r150_ruler10.0_iter10.jpg">
+                <p>SLICO_r150_ruler10.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r150_ruler10.0_iter20.jpg" alt="SLICO_r150_ruler10.0_iter20.jpg">
+                <p>SLICO_r150_ruler10.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r150_ruler10.0_iter5.jpg" alt="SLICO_r150_ruler10.0_iter5.jpg">
+                <p>SLICO_r150_ruler10.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r150_ruler20.0_iter10.jpg" alt="SLICO_r150_ruler20.0_iter10.jpg">
+                <p>SLICO_r150_ruler20.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r150_ruler20.0_iter20.jpg" alt="SLICO_r150_ruler20.0_iter20.jpg">
+                <p>SLICO_r150_ruler20.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r150_ruler20.0_iter5.jpg" alt="SLICO_r150_ruler20.0_iter5.jpg">
+                <p>SLICO_r150_ruler20.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r150_ruler40.0_iter10.jpg" alt="SLICO_r150_ruler40.0_iter10.jpg">
+                <p>SLICO_r150_ruler40.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r150_ruler40.0_iter20.jpg" alt="SLICO_r150_ruler40.0_iter20.jpg">
+                <p>SLICO_r150_ruler40.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r150_ruler40.0_iter5.jpg" alt="SLICO_r150_ruler40.0_iter5.jpg">
+                <p>SLICO_r150_ruler40.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r150_ruler5.0_iter10.jpg" alt="SLICO_r150_ruler5.0_iter10.jpg">
+                <p>SLICO_r150_ruler5.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r150_ruler5.0_iter20.jpg" alt="SLICO_r150_ruler5.0_iter20.jpg">
+                <p>SLICO_r150_ruler5.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r150_ruler5.0_iter5.jpg" alt="SLICO_r150_ruler5.0_iter5.jpg">
+                <p>SLICO_r150_ruler5.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r30_ruler10.0_iter10.jpg" alt="SLICO_r30_ruler10.0_iter10.jpg">
+                <p>SLICO_r30_ruler10.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r30_ruler10.0_iter20.jpg" alt="SLICO_r30_ruler10.0_iter20.jpg">
+                <p>SLICO_r30_ruler10.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r30_ruler10.0_iter5.jpg" alt="SLICO_r30_ruler10.0_iter5.jpg">
+                <p>SLICO_r30_ruler10.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r30_ruler20.0_iter10.jpg" alt="SLICO_r30_ruler20.0_iter10.jpg">
+                <p>SLICO_r30_ruler20.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r30_ruler20.0_iter20.jpg" alt="SLICO_r30_ruler20.0_iter20.jpg">
+                <p>SLICO_r30_ruler20.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r30_ruler20.0_iter5.jpg" alt="SLICO_r30_ruler20.0_iter5.jpg">
+                <p>SLICO_r30_ruler20.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r30_ruler40.0_iter10.jpg" alt="SLICO_r30_ruler40.0_iter10.jpg">
+                <p>SLICO_r30_ruler40.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r30_ruler40.0_iter20.jpg" alt="SLICO_r30_ruler40.0_iter20.jpg">
+                <p>SLICO_r30_ruler40.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r30_ruler40.0_iter5.jpg" alt="SLICO_r30_ruler40.0_iter5.jpg">
+                <p>SLICO_r30_ruler40.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r30_ruler5.0_iter10.jpg" alt="SLICO_r30_ruler5.0_iter10.jpg">
+                <p>SLICO_r30_ruler5.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r30_ruler5.0_iter20.jpg" alt="SLICO_r30_ruler5.0_iter20.jpg">
+                <p>SLICO_r30_ruler5.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r30_ruler5.0_iter5.jpg" alt="SLICO_r30_ruler5.0_iter5.jpg">
+                <p>SLICO_r30_ruler5.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r60_ruler10.0_iter10.jpg" alt="SLICO_r60_ruler10.0_iter10.jpg">
+                <p>SLICO_r60_ruler10.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r60_ruler10.0_iter20.jpg" alt="SLICO_r60_ruler10.0_iter20.jpg">
+                <p>SLICO_r60_ruler10.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r60_ruler10.0_iter5.jpg" alt="SLICO_r60_ruler10.0_iter5.jpg">
+                <p>SLICO_r60_ruler10.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r60_ruler20.0_iter10.jpg" alt="SLICO_r60_ruler20.0_iter10.jpg">
+                <p>SLICO_r60_ruler20.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r60_ruler20.0_iter20.jpg" alt="SLICO_r60_ruler20.0_iter20.jpg">
+                <p>SLICO_r60_ruler20.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r60_ruler20.0_iter5.jpg" alt="SLICO_r60_ruler20.0_iter5.jpg">
+                <p>SLICO_r60_ruler20.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r60_ruler40.0_iter10.jpg" alt="SLICO_r60_ruler40.0_iter10.jpg">
+                <p>SLICO_r60_ruler40.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r60_ruler40.0_iter20.jpg" alt="SLICO_r60_ruler40.0_iter20.jpg">
+                <p>SLICO_r60_ruler40.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r60_ruler40.0_iter5.jpg" alt="SLICO_r60_ruler40.0_iter5.jpg">
+                <p>SLICO_r60_ruler40.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r60_ruler5.0_iter10.jpg" alt="SLICO_r60_ruler5.0_iter10.jpg">
+                <p>SLICO_r60_ruler5.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r60_ruler5.0_iter20.jpg" alt="SLICO_r60_ruler5.0_iter20.jpg">
+                <p>SLICO_r60_ruler5.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLICO_r60_ruler5.0_iter5.jpg" alt="SLICO_r60_ruler5.0_iter5.jpg">
+                <p>SLICO_r60_ruler5.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r100_ruler10.0_iter10.jpg" alt="SLIC_r100_ruler10.0_iter10.jpg">
+                <p>SLIC_r100_ruler10.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r100_ruler10.0_iter20.jpg" alt="SLIC_r100_ruler10.0_iter20.jpg">
+                <p>SLIC_r100_ruler10.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r100_ruler10.0_iter5.jpg" alt="SLIC_r100_ruler10.0_iter5.jpg">
+                <p>SLIC_r100_ruler10.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r100_ruler20.0_iter10.jpg" alt="SLIC_r100_ruler20.0_iter10.jpg">
+                <p>SLIC_r100_ruler20.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r100_ruler20.0_iter20.jpg" alt="SLIC_r100_ruler20.0_iter20.jpg">
+                <p>SLIC_r100_ruler20.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r100_ruler20.0_iter5.jpg" alt="SLIC_r100_ruler20.0_iter5.jpg">
+                <p>SLIC_r100_ruler20.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r100_ruler40.0_iter10.jpg" alt="SLIC_r100_ruler40.0_iter10.jpg">
+                <p>SLIC_r100_ruler40.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r100_ruler40.0_iter20.jpg" alt="SLIC_r100_ruler40.0_iter20.jpg">
+                <p>SLIC_r100_ruler40.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r100_ruler40.0_iter5.jpg" alt="SLIC_r100_ruler40.0_iter5.jpg">
+                <p>SLIC_r100_ruler40.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r100_ruler5.0_iter10.jpg" alt="SLIC_r100_ruler5.0_iter10.jpg">
+                <p>SLIC_r100_ruler5.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r100_ruler5.0_iter20.jpg" alt="SLIC_r100_ruler5.0_iter20.jpg">
+                <p>SLIC_r100_ruler5.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r100_ruler5.0_iter5.jpg" alt="SLIC_r100_ruler5.0_iter5.jpg">
+                <p>SLIC_r100_ruler5.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r10_ruler10.0_iter10.jpg" alt="SLIC_r10_ruler10.0_iter10.jpg">
+                <p>SLIC_r10_ruler10.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r10_ruler10.0_iter20.jpg" alt="SLIC_r10_ruler10.0_iter20.jpg">
+                <p>SLIC_r10_ruler10.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r10_ruler10.0_iter5.jpg" alt="SLIC_r10_ruler10.0_iter5.jpg">
+                <p>SLIC_r10_ruler10.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r10_ruler20.0_iter10.jpg" alt="SLIC_r10_ruler20.0_iter10.jpg">
+                <p>SLIC_r10_ruler20.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r10_ruler20.0_iter20.jpg" alt="SLIC_r10_ruler20.0_iter20.jpg">
+                <p>SLIC_r10_ruler20.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r10_ruler20.0_iter5.jpg" alt="SLIC_r10_ruler20.0_iter5.jpg">
+                <p>SLIC_r10_ruler20.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r10_ruler40.0_iter10.jpg" alt="SLIC_r10_ruler40.0_iter10.jpg">
+                <p>SLIC_r10_ruler40.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r10_ruler40.0_iter20.jpg" alt="SLIC_r10_ruler40.0_iter20.jpg">
+                <p>SLIC_r10_ruler40.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r10_ruler40.0_iter5.jpg" alt="SLIC_r10_ruler40.0_iter5.jpg">
+                <p>SLIC_r10_ruler40.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r10_ruler5.0_iter10.jpg" alt="SLIC_r10_ruler5.0_iter10.jpg">
+                <p>SLIC_r10_ruler5.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r10_ruler5.0_iter20.jpg" alt="SLIC_r10_ruler5.0_iter20.jpg">
+                <p>SLIC_r10_ruler5.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r10_ruler5.0_iter5.jpg" alt="SLIC_r10_ruler5.0_iter5.jpg">
+                <p>SLIC_r10_ruler5.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r150_ruler10.0_iter10.jpg" alt="SLIC_r150_ruler10.0_iter10.jpg">
+                <p>SLIC_r150_ruler10.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r150_ruler10.0_iter20.jpg" alt="SLIC_r150_ruler10.0_iter20.jpg">
+                <p>SLIC_r150_ruler10.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r150_ruler10.0_iter5.jpg" alt="SLIC_r150_ruler10.0_iter5.jpg">
+                <p>SLIC_r150_ruler10.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r150_ruler20.0_iter10.jpg" alt="SLIC_r150_ruler20.0_iter10.jpg">
+                <p>SLIC_r150_ruler20.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r150_ruler20.0_iter20.jpg" alt="SLIC_r150_ruler20.0_iter20.jpg">
+                <p>SLIC_r150_ruler20.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r150_ruler20.0_iter5.jpg" alt="SLIC_r150_ruler20.0_iter5.jpg">
+                <p>SLIC_r150_ruler20.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r150_ruler40.0_iter10.jpg" alt="SLIC_r150_ruler40.0_iter10.jpg">
+                <p>SLIC_r150_ruler40.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r150_ruler40.0_iter20.jpg" alt="SLIC_r150_ruler40.0_iter20.jpg">
+                <p>SLIC_r150_ruler40.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r150_ruler40.0_iter5.jpg" alt="SLIC_r150_ruler40.0_iter5.jpg">
+                <p>SLIC_r150_ruler40.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r150_ruler5.0_iter10.jpg" alt="SLIC_r150_ruler5.0_iter10.jpg">
+                <p>SLIC_r150_ruler5.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r150_ruler5.0_iter20.jpg" alt="SLIC_r150_ruler5.0_iter20.jpg">
+                <p>SLIC_r150_ruler5.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r150_ruler5.0_iter5.jpg" alt="SLIC_r150_ruler5.0_iter5.jpg">
+                <p>SLIC_r150_ruler5.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r30_ruler10.0_iter10.jpg" alt="SLIC_r30_ruler10.0_iter10.jpg">
+                <p>SLIC_r30_ruler10.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r30_ruler10.0_iter20.jpg" alt="SLIC_r30_ruler10.0_iter20.jpg">
+                <p>SLIC_r30_ruler10.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r30_ruler10.0_iter5.jpg" alt="SLIC_r30_ruler10.0_iter5.jpg">
+                <p>SLIC_r30_ruler10.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r30_ruler20.0_iter10.jpg" alt="SLIC_r30_ruler20.0_iter10.jpg">
+                <p>SLIC_r30_ruler20.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r30_ruler20.0_iter20.jpg" alt="SLIC_r30_ruler20.0_iter20.jpg">
+                <p>SLIC_r30_ruler20.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r30_ruler20.0_iter5.jpg" alt="SLIC_r30_ruler20.0_iter5.jpg">
+                <p>SLIC_r30_ruler20.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r30_ruler40.0_iter10.jpg" alt="SLIC_r30_ruler40.0_iter10.jpg">
+                <p>SLIC_r30_ruler40.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r30_ruler40.0_iter20.jpg" alt="SLIC_r30_ruler40.0_iter20.jpg">
+                <p>SLIC_r30_ruler40.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r30_ruler40.0_iter5.jpg" alt="SLIC_r30_ruler40.0_iter5.jpg">
+                <p>SLIC_r30_ruler40.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r30_ruler5.0_iter10.jpg" alt="SLIC_r30_ruler5.0_iter10.jpg">
+                <p>SLIC_r30_ruler5.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r30_ruler5.0_iter20.jpg" alt="SLIC_r30_ruler5.0_iter20.jpg">
+                <p>SLIC_r30_ruler5.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r30_ruler5.0_iter5.jpg" alt="SLIC_r30_ruler5.0_iter5.jpg">
+                <p>SLIC_r30_ruler5.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r60_ruler10.0_iter10.jpg" alt="SLIC_r60_ruler10.0_iter10.jpg">
+                <p>SLIC_r60_ruler10.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r60_ruler10.0_iter20.jpg" alt="SLIC_r60_ruler10.0_iter20.jpg">
+                <p>SLIC_r60_ruler10.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r60_ruler10.0_iter5.jpg" alt="SLIC_r60_ruler10.0_iter5.jpg">
+                <p>SLIC_r60_ruler10.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r60_ruler20.0_iter10.jpg" alt="SLIC_r60_ruler20.0_iter10.jpg">
+                <p>SLIC_r60_ruler20.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r60_ruler20.0_iter20.jpg" alt="SLIC_r60_ruler20.0_iter20.jpg">
+                <p>SLIC_r60_ruler20.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r60_ruler20.0_iter5.jpg" alt="SLIC_r60_ruler20.0_iter5.jpg">
+                <p>SLIC_r60_ruler20.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r60_ruler40.0_iter10.jpg" alt="SLIC_r60_ruler40.0_iter10.jpg">
+                <p>SLIC_r60_ruler40.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r60_ruler40.0_iter20.jpg" alt="SLIC_r60_ruler40.0_iter20.jpg">
+                <p>SLIC_r60_ruler40.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r60_ruler40.0_iter5.jpg" alt="SLIC_r60_ruler40.0_iter5.jpg">
+                <p>SLIC_r60_ruler40.0_iter5.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r60_ruler5.0_iter10.jpg" alt="SLIC_r60_ruler5.0_iter10.jpg">
+                <p>SLIC_r60_ruler5.0_iter10.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r60_ruler5.0_iter20.jpg" alt="SLIC_r60_ruler5.0_iter20.jpg">
+                <p>SLIC_r60_ruler5.0_iter20.jpg</p>
+            </div>
+            
+            <div class="grid-item">
+                <img src="SLIC_r60_ruler5.0_iter5.jpg" alt="SLIC_r60_ruler5.0_iter5.jpg">
+                <p>SLIC_r60_ruler5.0_iter5.jpg</p>
+            </div>
+            
+        </div>
+    </body>
+    </html>
+    
