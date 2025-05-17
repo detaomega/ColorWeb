@@ -77,25 +77,32 @@ def run_focused_experiment(image_path, output_dir):
     # Load image
     print(f"Loading image from {image_path}...")
     img = load_image(image_path)
-    
+
+    #get image dimensions
+    height, width, channels = img.shape
+
     # Save original image
     cv2.imwrite(os.path.join(experiment_dir, "original.jpg"), img)
     
     # Fixed parameters
-    ruler = 20.0
-    iterations = 20
+    iterations = 15 if height < 750 and width < 750 else 20 if height > 2000 or width > 2000 else 17
+    ruler = 25 if height < 750 and width < 750 else 35 if height > 2000 or width > 2000 else 30
+    size = "small" if height < 750 and width < 750 else "large" if height > 2000 or width > 2000 else "medium"
     algorithm = "SLICO"
     
     # Region sizes to test
-    region_sizes = [20,30,40,50,60,70,80,90,100,110,120,130,140,150]
-    
+    region_sizes = {}
+    region_sizes["small"] = [10,13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52, 55, 58, 61, 64]
+    region_sizes["medium"] = [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110]
+    region_sizes["large"] = [20, 30, 40, 50, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125]
+    region_sizes["normal"] = [20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150]
     results = []
     
     print(f"Running SLIC experiments with fixed parameters:")
     print(f"Algorithm: {algorithm}, Ruler: {ruler}, Iterations: {iterations}")
     print(f"Testing region sizes: {region_sizes}")
-    
-    for region_size in region_sizes:
+
+    for region_size in region_sizes["normal"]:
         print(f"Testing region size: {region_size}")
         
         # Apply SLIC
@@ -164,7 +171,8 @@ def main():
     Main function
     """
     # Replace with your image path
-    image_path = "test3.jpg"
+
+    image_path = "D:\\113 - 2\\web\\anime image\\Inazuma Eleven_3.jpg"
     # Replace with your output path
     output_dir = 'slic_result'
     run_focused_experiment(image_path, output_dir)
