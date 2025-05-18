@@ -1,6 +1,6 @@
 // controllers/gamecontroller.js
 const Game = require('../db_structures/game');
-const GameQuestion = require('../db_structures/gamequestion');
+const GameQuestion = require('../db_structures/gameQuestion');
 const Question = require('../db_structures/question');
 const { nanoid } = require('nanoid');
 

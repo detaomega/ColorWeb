@@ -1,4 +1,8 @@
-// controllers/questioncontroller.js 核心函數
+// controllers/gamecontroller.js
+const Game = require('../db_structures/game');
+const GameQuestion = require('../db_structures/gameQuestion');
+const Question = require('../db_structures/question');
+const { v4: uuidv4 } = require('uuid');
 
 // 創建新動漫問題 - 超簡化版
 exports.createQuestion = async (req, res) => {
