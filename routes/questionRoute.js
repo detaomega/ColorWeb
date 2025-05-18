@@ -1,13 +1,13 @@
-// routes/questionRoutes.js - Updated for Anime Quiz
+// routes/questionroute.js
 const express = require('express');
 const router = express.Router();
-const questionController = require('../controllers/questionController');
+const questionController = require('../controllers/questioncontroller');
 
-// Question management routes
+// 問題管理路由
 router.post('/questions', questionController.createQuestion);
 router.get('/questions', questionController.getQuestions);
 
-// Game-specific question routes
+// 遊戲特定問題路由
 router.post('/games/:gameId/questions', questionController.addQuestionsToGame);
 router.get('/games/:gameId/question', questionController.getCurrentQuestion);
 router.post('/games/:gameId/question/next-image', questionController.revealNextImage);
