@@ -1,32 +1,48 @@
-// server.js
+// server.js - Final Version
 require('dotenv').config();
 const mongoose = require('mongoose');
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');
 
-// 導入路由
-const gameRoutes = require('./routes/gameRoutes');
-const playerRoutes = require('./routes/playerRoutes');
+// Import routes
+const gameRoutes = require('./routes/gameRoute');
+const playerRoutes = require('./routes/playerRoute');
+const questionRoutes = require('./routes/questionRoute');
 
 const app = express();
 
-// 中間件
+// Middleware
 app.use(bodyParser.json());
 
-// MongoDB 連接
+// Serve static files (for images)
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
+
+// MongoDB connection
 mongoose.connect(process.env.MONGO_URL)
-  .then(() => console.log('已連接到 MongoDB'))
-  .catch(err => console.error('MongoDB 連接錯誤:', err));
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
-// 根路由
-app.get('/', (req, res) => res.send('QA 遊戲 API 正在運行'));
+// Root route
+app.get('/', (req, res) => res.send('Anime Guessing Game API is running'));
 
-// 註冊路由
+// Register routes
 app.use('/api/games', gameRoutes);
 app.use('/api', playerRoutes);
+app.use('/api', questionRoutes);
 
-// 啟動服務器
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    success: false,
+    message: 'Internal Server Error',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
+});
+
+// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`服務器運行在端口 ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

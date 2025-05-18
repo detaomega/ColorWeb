@@ -1,5 +1,5 @@
 // controllers/gameController.js
-const Game = require('../models/Game');
+const Game = require('../db_structures/game');
 const { v4: uuidv4 } = require('uuid');
 
 // 創建新遊戲

@@ -1,17 +1,17 @@
-// models/Question.js - Updated for Anime Quiz
+// db_structures/question.js
 const mongoose = require('mongoose');
 
 const questionSchema = new mongoose.Schema({
-  // Anime name or title (the correct answer)
+  // 動漫名稱或標題（正確答案）
   animeTitle: {
     type: String,
     required: true
   },
-  // Alternative acceptable answers (abbreviations, alternative titles, etc.)
+  // 可接受的替代答案（縮寫、替代標題等）
   alternativeTitles: [{
     type: String
   }],
-  // Progressive images that reveal more about the anime
+  // 逐步顯示的圖片
   images: [{
     url: {
       type: String,
@@ -21,44 +21,32 @@ const questionSchema = new mongoose.Schema({
       type: Number,
       required: true
     },
-    // Optional hint text for each image
-    hint: {
-      type: String
-    }
   }],
-  // Difficulty level
+  // 難度級別
   difficulty: {
     type: String,
     enum: ['easy', 'medium', 'hard'],
     default: 'medium'
   },
-  // Optional category (e.g., "shounen", "mecha", "slice of life")
-  category: {
-    type: String
-  },
-  // Year the anime was released
-  releaseYear: {
-    type: Number
-  },
-  // Creation timestamp
+  // 創建時間戳
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
 
-// Method to check if an answer is correct
+// 檢查答案是否正確的方法
 questionSchema.methods.isCorrectAnswer = function(answer) {
   if (!answer) return false;
   
-  // Convert to lowercase for case-insensitive comparison
+  // 轉為小寫進行不區分大小寫的比較
   const normalizedAnswer = answer.toLowerCase().trim();
   const normalizedTitle = this.animeTitle.toLowerCase().trim();
   
-  // Check if it matches the main title
+  // 檢查是否匹配主標題
   if (normalizedAnswer === normalizedTitle) return true;
   
-  // Check if it matches any alternative titles
+  // 檢查是否匹配任何替代標題
   return this.alternativeTitles.some(title => 
     normalizedAnswer === title.toLowerCase().trim()
   );

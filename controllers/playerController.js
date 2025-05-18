@@ -1,6 +1,6 @@
 // controllers/playerController.js
-const Player = require('../models/Player');
-const Game = require('../models/Game');
+const Player = require('../db_structures/player');
+const Game = require('../db_structures/game');
 
 // 創建玩家（加入遊戲）
 exports.createPlayer = async (req, res) => {

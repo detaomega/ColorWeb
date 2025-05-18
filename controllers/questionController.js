@@ -1,8 +1,8 @@
 // controllers/questionController.js - Updated for Anime Quiz
-const Question = require('../models/Question');
-const GameQuestion = require('../models/GameQuestion');
-const Game = require('../models/Game');
-const Player = require('../models/Player');
+const Question = require('../db_structures/question');
+const GameQuestion = require('../db_structures/gameQuestion');
+const Player = require('../db_structures/player');
+const Game = require('../db_structures/game');
 const mongoose = require('mongoose');
 
 // Create a new anime question
