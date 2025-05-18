@@ -1,26 +1,24 @@
-// db_structures/question.js
+// db_structures/question.js - 最終簡化版
 const mongoose = require('mongoose');
+const { v4: uuidv4 } = require('uuid');
 
-// 定義單一圖片組（一個題目）的模式
+// 定義單一圖片組的模式
 const imageSetSchema = new mongoose.Schema({
-  // 組的識別符或名稱
+  // 唯一ID
+  setId: {
+    type: String,
+    required: true,
+    default: () => uuidv4() // 自動生成唯一ID
+  },
+  // 圖片集名稱
   setName: {
     type: String,
     required: true
   },
-  // 這組中的圖片列表
+  // 圖片URL列表 - 超簡化，只存URL陣列
   images: [{
-    url: {
-      type: String,
-      required: true
-    },
-    order: {
-      type: Number,
-      required: true
-    },
-    hint: {
-      type: String
-    }
+    type: String,
+    required: true
   }]
 });
 
@@ -34,36 +32,13 @@ const questionSchema = new mongoose.Schema({
   alternativeTitles: [{
     type: String
   }],
-  // 多組圖片集合，每組代表一個可能的題目
+  // 多組圖片集合
   imageSets: [imageSetSchema],
-  // 難度級別
-  difficulty: {
-    type: String,
-    enum: ['easy', 'medium', 'hard'],
-    default: 'medium'
-  },
   // 創建時間戳
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
-
-// 檢查答案是否正確的方法
-questionSchema.methods.isCorrectAnswer = function(answer) {
-  if (!answer) return false;
-  
-  // 轉為小寫進行不區分大小寫的比較
-  const normalizedAnswer = answer.toLowerCase().trim();
-  const normalizedTitle = this.animeTitle.toLowerCase().trim();
-  
-  // 檢查是否匹配主標題
-  if (normalizedAnswer === normalizedTitle) return true;
-  
-  // 檢查是否匹配任何替代標題
-  return this.alternativeTitles.some(title => 
-    normalizedAnswer === title.toLowerCase().trim()
-  );
-};
 
 module.exports = mongoose.model('Question', questionSchema);

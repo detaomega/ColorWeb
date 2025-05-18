@@ -12,28 +12,6 @@ const playerSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  answers: [{
-    questionId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Question'
-    },
-    answer: {
-      type: String
-    },
-    isCorrect: {
-      type: Boolean
-    },
-    timeRemaining: {
-      type: Number
-    },
-    score: {
-      type: Number
-    },
-    answeredAt: {
-      type: Date,
-      default: Date.now
-    }
-  }],
   joinedAt: {
     type: Date,
     default: Date.now

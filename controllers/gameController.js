@@ -2,7 +2,7 @@
 const Game = require('../db_structures/game');
 const GameQuestion = require('../db_structures/gamequestion');
 const Question = require('../db_structures/question');
-const { v4: uuidv4 } = require('uuid');
+const { nanoid } = require('nanoid');
 
 // 創建新遊戲
 exports.createGame = async (req, res) => {
@@ -12,7 +12,7 @@ exports.createGame = async (req, res) => {
       settings 
     } = req.body;
     
-    const gameId = uuidv4(); // 生成唯一遊戲ID
+    const gameId = nanoid(8); // 生成唯一遊戲ID
     
     // 創建遊戲，可選設定
     const game = new Game({

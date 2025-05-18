@@ -8,14 +8,14 @@ const gameQuestionSchema = new mongoose.Schema({
     ref: 'Game',
     required: true
   },
-  // 引用 Question 模型（動漫問題）
+  // 引用 Question 模型
   questionId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Question',
     required: true
   },
-  // 使用的圖片集名稱
-  imageSetName: {
+  // 使用的圖片集ID
+  imageSetId: {
     type: String,
     required: true
   },
