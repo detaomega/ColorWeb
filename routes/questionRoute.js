@@ -6,7 +6,6 @@ const questionController = require('../controllers/questionController');
 
 // 問題管理路由
 router.post('/questions', questionController.createQuestion);
-router.get('/questions', questionController.getQuestions);
 
 // 遊戲特定問題路由
 router.post('/games/:gameId/questions', questionController.addQuestionsToGame);

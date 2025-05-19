@@ -1,7 +1,7 @@
 // routes/gameroute.js
 const express = require('express');
 const router = express.Router();
-const gameController = require('../controllers/gamecontroller');
+const gameController = require('../controllers/gameController');
 
 // 創建新遊戲
 router.post('/', gameController.createGame);

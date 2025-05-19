@@ -60,16 +60,6 @@ const gameSchema = new mongoose.Schema({
     rounds: {
       type: Number,
       default: 10
-    },
-    // 包含的類別
-    categories: [{
-      type: String
-    }],
-    // 難度
-    difficulty: {
-      type: String,
-      enum: ['easy', 'medium', 'hard', 'mixed'],
-      default: 'mixed'
     }
   },
   // 內嵌玩家列表

@@ -4,12 +4,20 @@ const mongoose = require('mongoose');
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+
+// 讀取你的 openapi.yaml
+const swaggerDocument = YAML.load('./openapi.yaml');
 
 // 導入路由
 const gameRoute = require('./routes/gameroute');
 const questionRoute = require('./routes/questionroute');
 
 const app = express();
+
+// 設定 Swagger UI 路由
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // 中間件
 app.use(bodyParser.json());
