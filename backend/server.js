@@ -11,8 +11,8 @@ const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./openapi.yaml');
 
 // 導入路由
-const gameRoute = require('./routes/gameroute');
-const questionRoute = require('./routes/questionroute');
+const gameRoute = require('./routes/gameRoute');
+const questionRoute = require('./routes/questionRoute');
 
 const app = express();
 
