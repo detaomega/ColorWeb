@@ -12,3 +12,23 @@
 9. for next image, repeate steps 3 ~ 8
 
 # named your image as "{name of the animate}_n"
+
+
+# file structure
+
+../create_data/dataset/
+├── Chainsaw Man/                   # Anime 1 
+│   ├── Chainsaw Man_1/             # Character set 1
+│   │   ├── 1.jpg                   # Progressive reveal images
+│   │   ├── 2.jpg
+│   │   ├── 3.jpg
+│   │   ├── 4.jpg
+│   │   ├── 5.jpg
+│   │   ├── 6.jpg
+│   │   ├── 7.jpg
+│   │   └── original.jpg            # Final reveal
+│   ├── Chainsaw Man_2/             # Character set 2
+│   └── Chainsaw Man_3/             # Character set 3
+└── Attack on Titan/                # Anime 2
+    ├── Attack on Titan_1/
+    └── Attack on Titan_2/
