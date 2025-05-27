@@ -1,29 +1,24 @@
 openapi: 3.0.3
 info:
-  title: 動漫猜謎遊戲 API
-  description: 用於管理動漫猜謎遊戲的 API，包含遊戲創建、問題管理、玩家互動等功能
+  title: Game API
+  description: API for managing games, players, and questions in a gaming system
   version: 1.0.0
-servers:
-  - url: https://api.example.com/v1
-    description: 生產環境
-  - url: https://staging-api.example.com/v1
-    description: 測試環境
+  contact:
+    name: Game API Support
+    email: support@gameapi.com
 
-tags:
-  - name: 遊戲管理
-    description: 創建、獲取和管理遊戲相關操作
-  - name: 玩家管理
-    description: 添加玩家和獲取玩家排名相關操作
-  - name: 問題管理
-    description: 創建和管理問題相關操作
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
 
 paths:
+  # Game Routes
   /games:
     post:
-      summary: 創建新遊戲
-      description: 創建一個新的動漫猜謎遊戲
       tags:
-        - 遊戲管理
+        - Games
+      summary: Create a new game
+      description: Creates a new game instance
       requestBody:
         required: true
         content:
@@ -33,17 +28,13 @@ paths:
               properties:
                 gameTitle:
                   type: string
-                  description: 遊戲標題
-                  example: "Anime Guessing Game"
+                  description: Game title (defaults to "Anime Guessing Game")
                 settings:
-                  $ref: '#/components/schemas/GameSettings'
-                hostId:
-                  type: string
-                  description: 主持人ID
-                  example: "host123456"
+                  type: object
+                  description: Game configuration settings (optional)
       responses:
         '201':
-          description: 遊戲創建成功
+          description: Game created successfully
           content:
             application/json:
               schema:
@@ -51,36 +42,33 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    example: true
                   message:
                     type: string
-                    example: "遊戲創建成功"
                   game:
                     $ref: '#/components/schemas/Game'
         '500':
-          description: 伺服器錯誤
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-  
+                $ref: '#/components/schemas/ErrorResponse'
+
   /games/{gameId}:
     get:
-      summary: 獲取特定遊戲資訊
-      description: 根據遊戲ID獲取遊戲詳細資訊，包含遊戲中的玩家排名
       tags:
-        - 遊戲管理
+        - Games
+      summary: Get specific game information
+      description: Retrieves game information including player rankings
       parameters:
         - name: gameId
           in: path
           required: true
           schema:
             type: string
-          description: 遊戲唯一ID
-          example: "a1b2c3d4"
+          description: Game ID
       responses:
         '200':
-          description: 成功獲取遊戲資訊
+          description: Game information retrieved successfully
           content:
             application/json:
               schema:
@@ -88,7 +76,6 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    example: true
                   game:
                     allOf:
                       - $ref: '#/components/schemas/Game'
@@ -97,38 +84,35 @@ paths:
                           players:
                             type: array
                             items:
-                              $ref: '#/components/schemas/PlayerRanking'
+                              $ref: '#/components/schemas/RankedPlayer'
                           questionCount:
                             type: integer
-                            description: 遊戲中的問題數量
-                            example: 10
         '404':
-          description: 找不到遊戲
+          description: Game not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 伺服器錯誤
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-  
+                $ref: '#/components/schemas/ErrorResponse'
+
   /games/{gameId}/settings:
     patch:
-      summary: 更新遊戲設定
-      description: 更新指定遊戲的設定參數
       tags:
-        - 遊戲管理
+        - Games
+      summary: Update game settings
+      description: Updates the configuration settings of a specific game
       parameters:
         - name: gameId
           in: path
           required: true
           schema:
             type: string
-          description: 遊戲唯一ID
-          example: "a1b2c3d4"
+          description: Game ID
       requestBody:
         required: true
         content:
@@ -137,10 +121,11 @@ paths:
               type: object
               properties:
                 settings:
-                  $ref: '#/components/schemas/GameSettings'
+                  type: object
+                  description: Updated game settings
       responses:
         '200':
-          description: 遊戲設定更新成功
+          description: Game settings updated successfully
           content:
             application/json:
               schema:
@@ -148,45 +133,42 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    example: true
                   message:
                     type: string
-                    example: "遊戲設定更新成功"
                   game:
                     $ref: '#/components/schemas/Game'
         '400':
-          description: 請求錯誤，可能是遊戲已開始
+          description: Game cannot be updated (not in waiting status)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 找不到遊戲
+          description: Game not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 伺服器錯誤
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-  
+                $ref: '#/components/schemas/ErrorResponse'
+
   /games/{gameId}/players:
     post:
-      summary: 添加玩家到遊戲
-      description: 將新玩家添加到指定的遊戲中
       tags:
-        - 玩家管理
+        - Players
+      summary: Add player to game
+      description: Adds a new player to the specified game
       parameters:
         - name: gameId
           in: path
           required: true
           schema:
             type: string
-          description: 遊戲唯一ID
-          example: "a1b2c3d4"
+          description: Game ID
       requestBody:
         required: true
         content:
@@ -196,13 +178,12 @@ paths:
               properties:
                 username:
                   type: string
-                  description: 玩家名稱
-                  example: "player1"
+                  description: Player username
               required:
                 - username
       responses:
         '201':
-          description: 成功添加玩家
+          description: Player added successfully
           content:
             application/json:
               schema:
@@ -210,53 +191,50 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    example: true
                   message:
                     type: string
-                    example: "成功加入遊戲"
                   player:
                     $ref: '#/components/schemas/Player'
         '400':
-          description: 請求錯誤，可能是缺少用戶名或遊戲已開始
+          description: Bad request (missing username or game not in waiting status)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 找不到遊戲
+          description: Game not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 衝突，用戶名已存在
+          description: Username already exists
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 伺服器錯誤
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-    
+                $ref: '#/components/schemas/ErrorResponse'
+
     get:
-      summary: 獲取遊戲玩家
-      description: 獲取指定遊戲中的所有玩家，按分數排序
       tags:
-        - 玩家管理
+        - Players
+      summary: Get game players
+      description: Retrieves all players in the specified game
       parameters:
         - name: gameId
           in: path
           required: true
           schema:
             type: string
-          description: 遊戲唯一ID
-          example: "a1b2c3d4"
+          description: Game ID
       responses:
         '200':
-          description: 成功獲取玩家列表
+          description: Players retrieved successfully
           content:
             application/json:
               schema:
@@ -264,41 +242,39 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    example: true
                   players:
                     type: array
                     items:
-                      $ref: '#/components/schemas/PlayerRanking'
+                      $ref: '#/components/schemas/RankedPlayer'
         '404':
-          description: 找不到遊戲
+          description: Game not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 伺服器錯誤
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-  
+                $ref: '#/components/schemas/ErrorResponse'
+
   /games/{gameId}/start:
     post:
-      summary: 開始遊戲
-      description: 將指定遊戲的狀態設為活動並開始第一個問題
       tags:
-        - 遊戲管理
+        - Games
+      summary: Start game
+      description: Starts the specified game
       parameters:
         - name: gameId
           in: path
           required: true
           schema:
             type: string
-          description: 遊戲唯一ID
-          example: "a1b2c3d4"
+          description: Game ID
       responses:
         '200':
-          description: 遊戲成功開始
+          description: Game started successfully
           content:
             application/json:
               schema:
@@ -306,52 +282,47 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    example: true
                   message:
                     type: string
-                    example: "遊戲已開始"
                   game:
                     $ref: '#/components/schemas/Game'
                   totalQuestions:
                     type: integer
-                    description: 遊戲中的問題總數
-                    example: 10
         '400':
-          description: 請求錯誤，可能是遊戲已開始、無玩家或無問題
+          description: Game cannot be started (no players, no questions, or not in waiting status)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 找不到遊戲
+          description: Game not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 伺服器錯誤
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-  
+                $ref: '#/components/schemas/ErrorResponse'
+
   /games/{gameId}/end:
     post:
-      summary: 結束遊戲
-      description: 將指定遊戲的狀態設為已完成
       tags:
-        - 遊戲管理
+        - Games
+      summary: End game
+      description: Ends the specified game
       parameters:
         - name: gameId
           in: path
           required: true
           schema:
             type: string
-          description: 遊戲唯一ID
-          example: "a1b2c3d4"
+          description: Game ID
       responses:
         '200':
-          description: 遊戲成功結束
+          description: Game ended successfully
           content:
             application/json:
               schema:
@@ -359,52 +330,49 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    example: true
                   message:
                     type: string
-                    example: "遊戲已結束"
                   game:
                     $ref: '#/components/schemas/Game'
                   players:
                     type: array
                     items:
-                      $ref: '#/components/schemas/PlayerRanking'
+                      $ref: '#/components/schemas/RankedPlayer'
         '400':
-          description: 請求錯誤，可能是遊戲不在活動狀態
+          description: Game is not in active status
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 找不到遊戲
+          description: Game not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 伺服器錯誤
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-  
+                $ref: '#/components/schemas/ErrorResponse'
+
   /games/{gameId}/results:
     get:
-      summary: 獲取遊戲結果
-      description: 獲取已結束遊戲的結果和統計數據
       tags:
-        - 遊戲管理
+        - Games
+      summary: Get game results
+      description: Retrieves the final results of the completed game
       parameters:
         - name: gameId
           in: path
           required: true
           schema:
             type: string
-          description: 遊戲唯一ID
-          example: "a1b2c3d4"
+          description: Game ID
       responses:
         '200':
-          description: 成功獲取遊戲結果
+          description: Game results retrieved successfully
           content:
             application/json:
               schema:
@@ -412,40 +380,40 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    example: true
                   game:
                     $ref: '#/components/schemas/Game'
                   players:
                     type: array
                     items:
-                      $ref: '#/components/schemas/PlayerRanking'
+                      $ref: '#/components/schemas/RankedPlayer'
                   gameStats:
                     $ref: '#/components/schemas/GameStats'
         '400':
-          description: 請求錯誤，可能是遊戲尚未結束
+          description: Game is not finished yet
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 找不到遊戲
+          description: Game not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 伺服器錯誤
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
 
+  # Question Routes
   /questions:
     post:
-      summary: 創建問題
-      description: 創建一個新的動漫問題
       tags:
-        - 問題管理
+        - Questions
+      summary: Create a new anime question
+      description: Creates a new anime question with image sets for use in games
       requestBody:
         required: true
         content:
@@ -455,42 +423,23 @@ paths:
               properties:
                 animeTitle:
                   type: string
-                  description: 動漫標題
-                  example: "Attack on Titan"
+                  description: Main anime title
                 alternativeTitles:
                   type: array
-                  description: 可選的動漫替代標題
                   items:
                     type: string
-                  example: ["進撃の巨人", "進擊的巨人"]
+                  description: Alternative titles for the anime (optional)
                 imageSets:
                   type: array
-                  description: 包含圖片集的數組
                   items:
-                    type: object
-                    properties:
-                      setId:
-                        type: string
-                        description: 圖片集ID (可選，如果未提供將自動生成)
-                        example: "set_123456"
-                      setName:
-                        type: string
-                        description: 圖片集名稱
-                        example: "Character Set 1"
-                      images:
-                        type: array
-                        description: 圖片URL列表
-                        items:
-                          type: string
-                          example: "https://example.com/image1.jpg"
-                        minItems: 3
-                  minItems: 1
+                    $ref: '#/components/schemas/ImageSetInput'
+                  description: Image sets for the question (minimum 1 set)
               required:
                 - animeTitle
                 - imageSets
       responses:
         '201':
-          description: 問題創建成功
+          description: Question created successfully
           content:
             application/json:
               schema:
@@ -498,41 +447,38 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    example: true
                   message:
                     type: string
-                    example: "動漫問題創建成功"
                   question:
                     $ref: '#/components/schemas/Question'
         '400':
-          description: 請求錯誤，可能是缺少必要欄位或圖片集不符合要求
+          description: Bad request (missing required fields or invalid image sets)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 伺服器錯誤
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-  
+                $ref: '#/components/schemas/ErrorResponse'
+
   /games/{gameId}/questions:
     post:
-      summary: 添加問題到遊戲
-      description: 將問題添加到指定遊戲中
       tags:
-        - 問題管理
+        - Questions
+      summary: Add random questions to game
+      description: Adds randomly selected questions to the specified game
       parameters:
         - name: gameId
           in: path
           required: true
           schema:
             type: string
-          description: 遊戲唯一ID
-          example: "a1b2c3d4"
+          description: Game ID
       requestBody:
-        required: true
+        required: false
         content:
           application/json:
             schema:
@@ -540,12 +486,11 @@ paths:
               properties:
                 count:
                   type: integer
-                  description: 要添加的問題數量
                   default: 10
-                  example: 10
+                  description: Number of questions to add (default: 10)
       responses:
         '200':
-          description: 成功添加問題
+          description: Questions added to game successfully
           content:
             application/json:
               schema:
@@ -553,50 +498,46 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    example: true
                   message:
                     type: string
-                    example: "成功添加 10 個問題到遊戲"
                   count:
                     type: integer
-                    description: 實際添加的問題數量
-                    example: 10
+                    description: Number of questions actually added
         '400':
-          description: 請求錯誤，可能是遊戲已開始或無有效問題
+          description: Game not in waiting status or no valid questions
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 找不到遊戲或數據庫中沒有可用問題
+          description: Game not found or no questions available
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 伺服器錯誤
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-  
+                $ref: '#/components/schemas/ErrorResponse'
+
   /games/{gameId}/question:
     get:
-      summary: 獲取當前問題
-      description: 獲取指定遊戲的當前問題
       tags:
-        - 問題管理
+        - Questions
+      summary: Get current question
+      description: Retrieves the current active question in the game with images and answer information
       parameters:
         - name: gameId
           in: path
           required: true
           schema:
             type: string
-          description: 遊戲唯一ID
-          example: "a1b2c3d4"
+          description: Game ID
       responses:
         '200':
-          description: 成功獲取當前問題
+          description: Current question retrieved successfully
           content:
             application/json:
               schema:
@@ -604,67 +545,60 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    example: true
                   questionId:
                     type: string
-                    description: 問題唯一ID
-                    example: "5f8d5a....."
+                    description: Game question ID
                   questionOrder:
                     type: integer
-                    description: 問題順序編號
-                    example: 1
+                    description: Question order number
                   images:
                     type: array
-                    description: 圖片URL列表
                     items:
                       type: string
-                      example: "https://example.com/image1.jpg"
+                    description: Array of image URLs for current question
                   animeTitle:
                     type: string
-                    description: 動漫標題
-                    example: "Attack on Titan"
+                    description: Correct anime title
                   alternativeTitles:
                     type: array
-                    description: 動漫替代標題
                     items:
                       type: string
-                    example: ["進撃の巨人", "進擊的巨人"]
+                    description: Alternative acceptable titles
         '400':
-          description: 請求錯誤，可能是遊戲不在活動狀態
+          description: Game is not in active status
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 找不到遊戲、問題或圖片集
+          description: Game or question not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 伺服器錯誤
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-  
+                $ref: '#/components/schemas/ErrorResponse'
+
   /games/{gameId}/question/next:
     post:
-      summary: 開始下一個問題
-      description: 完成當前問題並開始下一個問題
       tags:
-        - 問題管理
+        - Questions
+      summary: Start next question
+      description: Moves to and starts the next question in the game, or ends the game if no more questions
       parameters:
         - name: gameId
           in: path
           required: true
           schema:
             type: string
-          description: 遊戲唯一ID
-          example: "a1b2c3d4"
+          description: Game ID
       responses:
         '200':
-          description: 成功切換到下一個問題
+          description: Next question started successfully or game completed
           content:
             application/json:
               schema:
@@ -672,55 +606,49 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    example: true
                   message:
                     type: string
-                    example: "開始下一個問題"
                   questionNumber:
                     type: integer
-                    description: 新的問題編號
-                    example: 2
+                    description: Current question number (only if game continues)
                   totalQuestions:
                     type: integer
-                    description: 問題總數
-                    example: 10
+                    description: Total number of questions (only if game continues)
                   gameComplete:
                     type: boolean
-                    description: 如果是最後一個問題，此字段為true
-                    example: false
+                    description: Whether the game has been completed
         '400':
-          description: 請求錯誤，可能是遊戲不在活動狀態
+          description: Game is not in active status
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 找不到遊戲
+          description: Game not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 伺服器錯誤
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-  
+                $ref: '#/components/schemas/ErrorResponse'
+
   /games/{gameId}/question/answer:
     post:
-      summary: 提交答案
-      description: 提交玩家對當前問題的答案
       tags:
-        - 問題管理
+        - Questions
+      summary: Submit score for current question
+      description: Submits a player's score for the current question and updates their total score
       parameters:
         - name: gameId
           in: path
           required: true
           schema:
             type: string
-          description: 遊戲唯一ID
-          example: "a1b2c3d4"
+          description: Game ID
       requestBody:
         required: true
         content:
@@ -730,18 +658,16 @@ paths:
               properties:
                 username:
                   type: string
-                  description: 玩家名稱
-                  example: "player1"
+                  description: Player username
                 score:
                   type: integer
-                  description: 本題獲得的分數
-                  example: 100
+                  description: Score to add to player's total (will be set to 0 if negative)
               required:
                 - username
                 - score
       responses:
         '200':
-          description: 成功提交答案
+          description: Score updated successfully
           content:
             application/json:
               schema:
@@ -749,54 +675,49 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    example: true
                   message:
                     type: string
-                    example: "分數更新成功"
                   score:
                     type: integer
-                    description: 本題獲得的分數
-                    example: 100
+                    description: Score added this round
                   totalScore:
                     type: integer
-                    description: 玩家總分
-                    example: 300
+                    description: Player's total score
         '400':
-          description: 請求錯誤，可能是缺少必要欄位或遊戲不在活動狀態
+          description: Missing required fields or game not in active status
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 找不到遊戲或玩家
+          description: Game or player not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 伺服器錯誤
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-  
+                $ref: '#/components/schemas/ErrorResponse'
+
   /games/{gameId}/rankings:
     get:
-      summary: 獲取玩家排名
-      description: 獲取指定遊戲中玩家的排名
       tags:
-        - 玩家管理
+        - Questions
+      summary: Get player rankings
+      description: Retrieves current player rankings in the game sorted by score
       parameters:
         - name: gameId
           in: path
           required: true
           schema:
             type: string
-          description: 遊戲唯一ID
-          example: "a1b2c3d4"
+          description: Game ID
       responses:
         '200':
-          description: 成功獲取玩家排名
+          description: Player rankings retrieved successfully
           content:
             application/json:
               schema:
@@ -804,23 +725,22 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    example: true
                   rankings:
                     type: array
                     items:
                       $ref: '#/components/schemas/PlayerRanking'
         '404':
-          description: 找不到遊戲
+          description: Game not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 伺服器錯誤
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
@@ -829,227 +749,96 @@ components:
       properties:
         gameId:
           type: string
-          description: 遊戲唯一ID
-          example: "a1b2c3d4"
+          description: Unique game ID (8 characters)
         gameTitle:
           type: string
-          description: 遊戲標題
-          example: "Anime Guessing Game"
+          description: Game title
         status:
           type: string
-          description: 遊戲狀態
           enum: [waiting, active, finished]
-          example: "waiting"
+          description: Current game status
         settings:
-          $ref: '#/components/schemas/GameSettings'
+          type: object
+          description: Game configuration settings
         players:
           type: array
-          description: 遊戲玩家列表
           items:
             $ref: '#/components/schemas/Player'
         currentQuestionNumber:
           type: integer
-          description: 當前問題編號 (1-based)
-          example: 0
-        startedAt:
-          type: string
-          format: date-time
-          description: 遊戲開始時間
-          example: "2025-05-20T10:30:00Z"
-        finishedAt:
-          type: string
-          format: date-time
-          description: 遊戲結束時間
-          example: null
+          description: Current question number (starts from 1)
         createdAt:
           type: string
           format: date-time
-          description: 遊戲創建時間
-          example: "2025-05-20T10:00:00Z"
-        hostId:
+        startedAt:
           type: string
-          description: 主持人ID
-          example: "host123456"
-    
-    GameSettings:
-      type: object
-      properties:
-        revealInterval:
-          type: integer
-          description: 每次圖片顯示的時間間隔（秒）
-          default: 5
-          example: 5
-        answerTime:
-          type: integer
-          description: 所有圖片顯示後的答題時間（秒）
-          default: 20
-          example: 20
-        maxPointsPerQuestion:
-          type: integer
-          description: 每題最高分數
-          default: 100
-          example: 100
-        rounds:
-          type: integer
-          description: 回合數（問題數）
-          default: 10
-          example: 10
-    
+          format: date-time
+        finishedAt:
+          type: string
+          format: date-time
+
     Player:
       type: object
       properties:
         username:
           type: string
-          description: 玩家名稱
-          example: "player1"
+          description: Player username
         score:
           type: integer
-          description: 玩家當前分數
-          example: 300
-          default: 0
-        joinedAt:
-          type: string
-          format: date-time
-          description: 玩家加入時間
-          example: "2025-05-20T10:15:00Z"
-    
-    PlayerRanking:
+          description: Current player score
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerAnswer'
+          description: Player's answer history
+
+    RankedPlayer:
       type: object
       properties:
-        rank:
-          type: integer
-          description: 玩家排名
-          example: 1
         username:
           type: string
-          description: 玩家名稱
-          example: "player1"
         score:
           type: integer
-          description: 玩家分數
-          example: 300
-    
-    Question:
+        rank:
+          type: integer
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerAnswer'
+
+    PlayerAnswer:
       type: object
       properties:
-        _id:
-          type: string
-          description: 問題唯一ID
-          example: "5f8d5a....."
-        animeTitle:
-          type: string
-          description: 動漫標題
-          example: "Attack on Titan"
-        alternativeTitles:
-          type: array
-          description: 動漫替代標題
-          items:
-            type: string
-          example: ["進撃の巨人", "進擊的巨人"]
-        imageSets:
-          type: array
-          description: 圖片集列表
-          items:
-            $ref: '#/components/schemas/ImageSet'
-        createdAt:
-          type: string
-          format: date-time
-          description: 問題創建時間
-          example: "2025-05-15T08:00:00Z"
-    
-    ImageSet:
-      type: object
-      properties:
-        setId:
-          type: string
-          description: 圖片集唯一ID
-          example: "set_123456"
-        setName:
-          type: string
-          description: 圖片集名稱
-          example: "Character Set 1"
-        images:
-          type: array
-          description: 圖片URL列表
-          items:
-            type: string
-            example: "https://example.com/image1.jpg"
-          minItems: 3
-    
-    GameQuestion:
-      type: object
-      properties:
-        gameId:
-          type: string
-          description: 遊戲ID
-          example: "a1b2c3d4"
         questionId:
           type: string
-          description: 問題ID
-          example: "5f8d5a....."
-        imageSetId:
+        answer:
           type: string
-          description: 所選圖片集ID
-          example: "set_123456"
-        order:
+        isCorrect:
+          type: boolean
+        points:
           type: integer
-          description: 問題順序
-          example: 1
-        status:
-          type: string
-          description: 問題狀態
-          enum: [pending, active, completed]
-          example: "pending"
-        currentImageIndex:
-          type: integer
-          description: 當前顯示的圖片索引
-          example: -1
-          default: -1
-        activatedAt:
+        answeredAt:
           type: string
           format: date-time
-          description: 問題變為活動狀態的時間
-          example: null
-        completedAt:
-          type: string
-          format: date-time
-          description: 問題完成的時間
-          example: null
-        timeLimit:
-          type: integer
-          description: 此問題的時間限制（秒）
-          default: 60
-          example: 60
-    
+
     GameStats:
       type: object
       properties:
         totalQuestions:
           type: integer
-          description: 遊戲問題總數
-          example: 10
         totalAnswers:
           type: integer
-          description: 總回答次數
-          example: 50
         correctAnswers:
           type: integer
-          description: 正確回答次數
-          example: 35
         correctPercentage:
           type: integer
-          description: 正確率百分比
-          example: 70
         averageScore:
           type: integer
-          description: 平均分數
-          example: 250
         gameDuration:
           type: integer
-          description: 遊戲持續時間（秒）
-          example: 600
-    
-    Error:
+          description: Game duration in seconds
+
+    ErrorResponse:
       type: object
       properties:
         success:
@@ -1057,9 +846,131 @@ components:
           example: false
         message:
           type: string
-          description: 錯誤訊息
-          example: "找不到遊戲"
+          description: Error message
         error:
           type: string
-          description: 詳細錯誤資訊
-          example: "Game with id a1b2c3d4 not found"
+          description: Detailed error information (optional)
+
+    Question:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Question ID
+        animeTitle:
+          type: string
+          description: Main anime title
+        alternativeTitles:
+          type: array
+          items:
+            type: string
+          description: Alternative acceptable titles
+        imageSets:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageSet'
+          description: Image sets for the question
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ImageSet:
+      type: object
+      properties:
+        setId:
+          type: string
+          description: Unique set ID (UUID)
+        setName:
+          type: string
+          description: Name of the image set
+        images:
+          type: array
+          items:
+            type: string
+          description: Array of image URLs (minimum 3 images required)
+
+    ImageSetInput:
+      type: object
+      properties:
+        setId:
+          type: string
+          description: Unique set ID (optional, will be generated if not provided)
+        setName:
+          type: string
+          description: Name of the image set
+        images:
+          type: array
+          items:
+            type: string
+          description: Array of image URLs (minimum 3 images required)
+          minItems: 3
+      required:
+        - images
+
+    PlayerRanking:
+      type: object
+      properties:
+        rank:
+          type: integer
+          description: Player's current rank (1-based)
+        username:
+          type: string
+          description: Player username
+        score:
+          type: integer
+          description: Player's total score
+
+    QuestionInput:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Question text
+        options:
+          type: array
+          items:
+            type: string
+          description: Multiple choice options
+        correctAnswer:
+          type: string
+          description: Correct answer
+        points:
+          type: integer
+          description: Points for correct answer
+        timeLimit:
+          type: integer
+          description: Time limit in seconds
+      required:
+        - text
+        - correctAnswer
+
+    GameResults:
+      type: object
+      properties:
+        gameId:
+          type: string
+        winner:
+          $ref: '#/components/schemas/PlayerRanking'
+        rankings:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerRanking'
+        totalQuestions:
+          type: integer
+        gameStartTime:
+          type: string
+          format: date-time
+        gameEndTime:
+          type: string
+          format: date-time
+
+tags:
+  - name: Games
+    description: Game management operations
+  - name: Players
+    description: Player management operations
+  - name: Questions
+    description: Question management operations
