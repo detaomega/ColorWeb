@@ -30,11 +30,12 @@ interface LeaderboardProps {
 }
 
 const Leaderboard: React.FC<LeaderboardProps> = ({ 
-  mode = 'final', 
+  mode = 'temporary', 
   players = defaultPlayers, 
   onContinue,
-  questionNumber 
+  questionNumber = 1
 }) => {
+  const [currentMode, setCurrentMode] = useState<'temporary' | 'final'>(mode);
   const [fireworks, setFireworks] = useState<FireworkParticle[]>([]);
   const [nextFireworkId, setNextFireworkId] = useState(0);
 
@@ -72,14 +73,14 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
   };
 
   useEffect(() => {
-    if (mode === 'final') {
+    if (currentMode === 'final') {
       // 立即創建第一個煙火
       createFirework();
       // 然後每1.5秒創建一個新煙火
       const interval = setInterval(createFirework, 1500);
       return () => clearInterval(interval);
     }
-  }, [mode]);
+  }, [currentMode]);
 
   const getRankColor = (rank: number) => {
     switch (rank) {
@@ -242,9 +243,19 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
   };
 
   // Temporary Leaderboard (Question End)
-  if (mode === 'temporary') {
+  if (currentMode === 'temporary') {
     return (
       <div className="min-h-screen bg-white text-black flex flex-col items-center p-5">
+        {/* Mode Switch Button */}
+        <div className="absolute top-4 right-4 z-30">
+          <Button 
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+            onClick={() => setCurrentMode('final')}
+          >
+            Switch to Final Mode
+          </Button>
+        </div>
+
         {/* Header for Temporary */}
         <header className="text-center my-8 mb-12">
           <h1 className="text-5xl font-bold text-black mb-4">
@@ -312,6 +323,16 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
   // Final Leaderboard (Game End) - 降低飽和度的背景和按鈕
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 text-white flex flex-col items-center p-5 relative overflow-hidden">
+      {/* Mode Switch Button */}
+      <div className="absolute top-4 right-4 z-30">
+        <Button 
+          className="px-4 py-2 bg-white hover:bg-gray-100 text-black rounded"
+          onClick={() => setCurrentMode('temporary')}
+        >
+          Switch to Temporary Mode
+        </Button>
+      </div>
+
       {/* 煙火容器 */}
       <div className="absolute inset-0 pointer-events-none z-10">
         {fireworks.map(particle => (
