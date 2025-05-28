@@ -1,0 +1,226 @@
+body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #4a69bd;
+            margin-bottom: 20px;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e55039;
+            margin-bottom: 15px;
+        }
+        
+        .image-container {
+            width: 100%;
+            height: 300px;
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .anime-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .hint-button {
+            background-color: #4a69bd;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+        
+        .hint-button:hover {
+            background-color: #1e3799;
+        }
+        
+        .hint-button:active {
+            transform: scale(0.95);
+        }
+        
+        .hint-button:disabled {
+            background-color: #95afc0;
+            cursor: not-allowed;
+        }
+        
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .answer-input {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            width: 80%;
+            max-width: 400px;
+        }
+        
+        .letter-count {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+        
+        .submit-btn {
+            background-color: #20bf6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .submit-btn:hover {
+            background-color: #0b9e5f;
+        }
+        
+        .submit-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .result-message {
+            font-size: 18px;
+            margin-top: 10px;
+            height: 22px;
+        }
+        
+        .correct {
+            color: #20bf6b;
+        }
+        
+        .incorrect {
+            color: #eb2f06;
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .game-over-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .score-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4a69bd;
+            margin: 20px 0;
+        }
+        
+        .restart-btn {
+            background-color: #4a69bd;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .restart-btn:hover {
+            background-color: #1e3799;
+        }
+        
+        .restart-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .start-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        
+        .start-btn {
+            background-color: #4a69bd;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 15px 40px;
+            font-size: 20px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: transform 0.2s;
+        }
+        
+        .start-btn:hover {
+            background-color: #1e3799;
+        }
+        
+        .start-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .game-container {
+            display: none;
+        }
+        
+        .loading-indicator {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            color: #4a69bd;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
