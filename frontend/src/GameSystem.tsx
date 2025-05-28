@@ -6,7 +6,7 @@ import JoinRoom from "./components/JoinRoom";
 import GameLobby from "./components/GameLobby";
 import GameScreen from "./components/GameScreen";
 import type { GameState, Player, Room } from "./types/gameTypes";
-import "./GameSystem.css";
+// import "./GameSystem.css";
 
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>("nickname");

@@ -1,35 +1,125 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
+import NicknameInput from "./components/NicknameInput";
+import MainMenu from "./components/MainMenu";
+import CreateRoom from "./components/CreateRoom";
+import JoinRoom from "./components/JoinRoom";
+import GameLobby from "./components/GameLobby";
+import GameScreen from "./components/GameScreen";
+import type { GameState, Player, Room } from "./types/gameTypes";
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App: React.FC = () => {
+  const [gameState, setGameState] = useState<GameState>("nickname");
+  const [nickname, setNickname] = useState<string>("");
+  const [currentRoom, setCurrentRoom] = useState<Room | null>(null);
+  const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
+
+  const handleNicknameSubmit = (inputNickname: string) => {
+    setNickname(inputNickname);
+    setCurrentPlayer({
+      id: Math.random().toString(36).substr(2, 9),
+      nickname: inputNickname,
+      isReady: false,
+      isHost: false,
+    });
+    setGameState("menu");
+  };
+
+  const handleCreateRoom = () => {
+    setGameState("createRoom");
+  };
+
+  const handleJoinRoom = () => {
+    setGameState("joinRoom");
+  };
+
+  const handleRoomCreated = (room: Room) => {
+    setCurrentRoom(room);
+    if (currentPlayer) {
+      const updatedPlayer = { ...currentPlayer, isHost: true };
+      setCurrentPlayer(updatedPlayer);
+    }
+    setGameState("lobby");
+  };
+
+  const handleRoomJoined = (room: Room) => {
+    setCurrentRoom(room);
+    setGameState("lobby");
+  };
+
+  const handleStartGame = () => {
+    setGameState("game");
+  };
+
+  const handleBackToMenu = () => {
+    setCurrentRoom(null);
+    if (currentPlayer) {
+      setCurrentPlayer({ ...currentPlayer, isHost: false, isReady: false });
+    }
+    setGameState("menu");
+  };
+
+  const renderCurrentScreen = () => {
+    switch (gameState) {
+      case "nickname":
+        return <NicknameInput onSubmit={handleNicknameSubmit} />;
+
+      case "menu":
+        return (
+          <MainMenu
+            nickname={nickname}
+            onCreateRoom={handleCreateRoom}
+            onJoinRoom={handleJoinRoom}
+          />
+        );
+
+      case "createRoom":
+        return (
+          <CreateRoom
+            player={currentPlayer!}
+            onRoomCreated={handleRoomCreated}
+            onBack={handleBackToMenu}
+          />
+        );
+
+      case "joinRoom":
+        return (
+          <JoinRoom
+            player={currentPlayer!}
+            onRoomJoined={handleRoomJoined}
+            onBack={handleBackToMenu}
+          />
+        );
+
+      case "lobby":
+        return (
+          <GameLobby
+            room={currentRoom!}
+            currentPlayer={currentPlayer!}
+            onStartGame={handleStartGame}
+            onBack={handleBackToMenu}
+          />
+        );
+
+      case "game":
+        return (
+          <GameScreen
+            room={currentRoom!}
+            currentPlayer={currentPlayer!}
+            onBack={handleBackToMenu}
+          />
+        );
+
+      default:
+        return <div>載入中...</div>;
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className="app">
+      <div className="container">{renderCurrentScreen()}</div>
+    </div>
+  );
+};
 
-export default App
+export default App;

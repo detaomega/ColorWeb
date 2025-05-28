@@ -1,12 +1,59 @@
 import React, { useState } from "react";
-import type { Player, Room } from "../types/gameTypes";
-import { mockRooms } from "../utils/mockData";
+import { ArrowLeft, LogIn, Users } from "lucide-react";
+
+// Mock types (replace with your actual types)
+interface Player {
+  id: string;
+  nickname: string;
+  isHost?: boolean;
+  isReady?: boolean;
+}
+
+interface Room {
+  id: string;
+  code: string;
+  host: Player;
+  players: Player[];
+  maxPlayers: number;
+  minPlayers: number;
+  isGameStarted: boolean;
+  createdAt: Date;
+}
 
 interface JoinRoomProps {
   player: Player;
   onRoomJoined: (room: Room) => void;
   onBack: () => void;
 }
+
+// Mock data for testing
+const mockRooms: Room[] = [
+  {
+    id: "1",
+    code: "ABC123",
+    host: { id: "host1", nickname: "Alice" },
+    players: [
+      { id: "host1", nickname: "Alice", isHost: true },
+      { id: "2", nickname: "Bob" }
+    ],
+    maxPlayers: 8,
+    minPlayers: 3,
+    isGameStarted: false,
+    createdAt: new Date(),
+  },
+  {
+    id: "2",
+    code: "XYZ789",
+    host: { id: "host2", nickname: "Charlie" },
+    players: [
+      { id: "host2", nickname: "Charlie", isHost: true }
+    ],
+    maxPlayers: 6,
+    minPlayers: 2,
+    isGameStarted: false,
+    createdAt: new Date(),
+  },
+];
 
 const JoinRoom: React.FC<JoinRoomProps> = ({
   player,
@@ -79,56 +126,110 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
   };
 
   return (
-    <div className="join-room">
-      <div className="header">
-        <button className="back-button" onClick={onBack}>
-          ← 返回
-        </button>
-        <h2>🚪 加入房間</h2>
-      </div>
-
-      <div className="join-instructions">
-        <p>輸入房主提供的房間代碼來加入遊戲</p>
-      </div>
-
-      <form onSubmit={handleJoinRoom} className="join-form">
-        <div className="input-group">
-          <label htmlFor="roomCode">房間代碼</label>
-          <input
-            id="roomCode"
-            type="text"
-            value={roomCode}
-            onChange={handleInputChange}
-            placeholder="輸入房間代碼"
-            maxLength={6}
-            autoFocus
-            style={{ textTransform: "uppercase" }}
-          />
-          {error && <span className="error-message">{error}</span>}
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-8">
+          <button
+            onClick={onBack}
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            返回
+          </button>
         </div>
 
-        <button
-          type="submit"
-          className="join-button"
-          disabled={isJoining || !roomCode.trim()}
-        >
-          {isJoining ? "加入中..." : "加入房間"}
-        </button>
-      </form>
+        {/* Main Card */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          {/* Title */}
+          <div className="p-6 border-b border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <LogIn className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <h1 className="text-xl font-semibold text-gray-900">加入房間</h1>
+                <p className="text-sm text-gray-500">輸入房間代碼來加入遊戲</p>
+              </div>
+            </div>
+          </div>
 
-      <div className="demo-codes">
-        <h3>測試房間代碼</h3>
-        <p>你可以使用以下代碼進行測試：</p>
-        <div className="demo-code-list">
-          {mockRooms.map((room) => (
-            <button
-              key={room.id}
-              className="demo-code-button"
-              onClick={() => setRoomCode(room.code)}
-            >
-              {room.code} ({room.players.length}/{room.maxPlayers})
-            </button>
-          ))}
+          {/* Form */}
+          <div className="p-6">
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="roomCode" className="block text-sm font-medium text-gray-700 mb-2">
+                  房間代碼
+                </label>
+                <input
+                  id="roomCode"
+                  type="text"
+                  value={roomCode}
+                  onChange={handleInputChange}
+                  placeholder="輸入 6 位房間代碼"
+                  maxLength={6}
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleJoinRoom(e as any);
+                    }
+                  }}
+                  className="w-full px-4 py-3 text-lg font-mono text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 uppercase tracking-wider"
+                />
+                {error && (
+                  <p className="mt-2 text-sm text-red-600">{error}</p>
+                )}
+              </div>
+
+              <button
+                onClick={handleJoinRoom}
+                disabled={isJoining || !roomCode.trim()}
+                className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
+                  isJoining || !roomCode.trim()
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+              >
+                {isJoining ? '加入中...' : '加入房間'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Demo Codes */}
+        <div className="mt-6 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 className="text-sm font-medium text-gray-900 mb-3 flex items-center gap-2">
+            <Users className="w-4 h-4" />
+            測試房間代碼
+          </h3>
+          <p className="text-xs text-gray-500 mb-4">你可以使用以下代碼進行測試</p>
+          
+          <div className="space-y-2">
+            {mockRooms.map((room) => (
+              <button
+                key={room.id}
+                onClick={() => setRoomCode(room.code)}
+                className="w-full flex items-center justify-between p-3 text-left border border-gray-200 rounded-md hover:border-blue-300 hover:bg-blue-50 transition-colors"
+              >
+                <div>
+                  <span className="font-mono font-medium text-gray-900">{room.code}</span>
+                  <span className="ml-2 text-sm text-gray-500">
+                    房主: {room.host.nickname}
+                  </span>
+                </div>
+                <span className="text-sm text-gray-500">
+                  {room.players.length}/{room.maxPlayers}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-4 text-center">
+          <p className="text-xs text-gray-500">
+            房間代碼由房主提供，通常為 6 位字母和數字組合
+          </p>
         </div>
       </div>
     </div>
