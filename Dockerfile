@@ -16,7 +16,7 @@ RUN chmod +x /usr/local/bin/docker-startup.sh
 # Create necessary directories inside the container
 # These will be used for storing processed images and mounting the dataset
 RUN mkdir -p /usr/src/app/public/images
-RUN mkdir -p /app/dataset
+RUN mkdir -p /app/dataset_resized
 
 
 EXPOSE 3000

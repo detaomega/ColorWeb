@@ -7,8 +7,8 @@ const mongoose = require('mongoose');
 const Question = require('./db_structures/question');
 
 // Docker-optimized paths
-const DATASET_PATH = process.env.DATASET_PATH || '/app/dataset';
-const ALTERNATIVES_FILE = process.env.ALTERNATIVES_FILE || '/app/dataset/alternative.js';
+const DATASET_PATH = process.env.DATASET_PATH || '/app/dataset_resized';
+const ALTERNATIVES_FILE = process.env.ALTERNATIVES_FILE || '/app/dataset_resized/alternative.js';
 const PUBLIC_IMAGES_DIR = './public/images';
 const BASE_IMAGE_URL = 'http://localhost:3000/images';
 
@@ -367,7 +367,7 @@ async function importDataset() {
     
     if (questionsData.length === 0) {
       console.log('\n⚠️ No questions were created. Possible issues:');
-      console.log('  📁 Check that dataset directory is properly mounted at /app/dataset');
+      console.log('  📁 Check that dataset directory is properly mounted at /app/dataset_resized');
       console.log('  🎭 Check that anime folders contain character subfolders');
       console.log('  🖼️ Check that character folders contain image files (1.jpg through 7.jpg, original.jpg)');
       return { success: false, reason: 'No data processed' };

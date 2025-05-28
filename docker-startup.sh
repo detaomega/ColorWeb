@@ -110,23 +110,23 @@ import_dataset() {
     fi
     
     # Check if dataset directory exists (mounted as volume)
-    if [ ! -d "/app/dataset" ]; then
-        echo -e "${YELLOW}⚠️ Dataset directory not mounted at /app/dataset. Skipping data import.${NC}"
+    if [ ! -d "/app/dataset_resized" ]; then
+        echo -e "${YELLOW}⚠️ Dataset directory not mounted at /app/dataset_resized. Skipping data import.${NC}"
         echo -e "${YELLOW}💡 To enable automatic data import, mount your dataset directory as a volume.${NC}"
         echo -e "${YELLOW}💡 Add this to your docker-compose.yml volumes section:${NC}"
-        echo -e "${YELLOW}   - ./create_data/dataset:/app/dataset:ro${NC}"
+        echo -e "${YELLOW}   - ./create_data/dataset_resized:/app/dataset_resized:ro${NC}"
         return 0
     fi
     
     # Check if dataset directory has content
-    if [ -z "$(ls -A /app/dataset 2>/dev/null)" ]; then
+    if [ -z "$(ls -A /app/dataset_resized 2>/dev/null)" ]; then
         echo -e "${YELLOW}⚠️ Dataset directory is empty. Skipping data import.${NC}"
         return 0
     fi
     
     # List what we found in the dataset directory
     echo -e "${BLUE}📁 Dataset directory contents:${NC}"
-    ls -la /app/dataset | head -10  # Show first 10 items
+    ls -la /app/dataset_resized | head -10  # Show first 10 items
     
     # Run the import script
     echo -e "${BLUE}🔄 Running data import script...${NC}"

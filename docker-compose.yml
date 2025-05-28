@@ -10,8 +10,8 @@ services:
     environment:
       - MONGO_URL=${MONGO_URL}
       # Optional: Override dataset paths if needed
-      - DATASET_PATH=/app/dataset
-      - ALTERNATIVES_FILE=/app/dataset/alternative.js
+      - DATASET_PATH=/app/dataset_resized
+      - ALTERNATIVES_FILE=/app/dataset_resized/alternative.js
     depends_on:
       - webproj_mongo
     volumes:
@@ -20,8 +20,8 @@ services:
       - /usr/src/app/node_modules
       
       # FIXED: Mount your dataset directory into the container
-      # This makes your local create_data/dataset folder available at /app/dataset inside the container
-      - ./create_data/dataset:/app/dataset:ro  # :ro means read-only for safety
+      # This makes your local create_data/dataset_resized folder available at /app/dataset_resized inside the container
+      - ./create_data/dataset_resized:/app/dataset_resized:ro  # :ro means read-only for safety
       
       # Create a persistent volume for processed images
       # This ensures images persist even if container is recreated
