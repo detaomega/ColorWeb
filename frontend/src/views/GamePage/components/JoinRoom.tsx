@@ -34,7 +34,7 @@ const mockRooms: Room[] = [
     host: { id: "host1", nickname: "Alice" },
     players: [
       { id: "host1", nickname: "Alice", isHost: true },
-      { id: "2", nickname: "Bob" }
+      { id: "2", nickname: "Bob" },
     ],
     maxPlayers: 8,
     minPlayers: 3,
@@ -45,9 +45,7 @@ const mockRooms: Room[] = [
     id: "2",
     code: "XYZ789",
     host: { id: "host2", nickname: "Charlie" },
-    players: [
-      { id: "host2", nickname: "Charlie", isHost: true }
-    ],
+    players: [{ id: "host2", nickname: "Charlie", isHost: true }],
     maxPlayers: 6,
     minPlayers: 2,
     isGameStarted: false,
@@ -148,7 +146,9 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
                 <LogIn className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">加入房間</h1>
+                <h1 className="text-xl font-semibold text-gray-900">
+                  加入房間
+                </h1>
                 <p className="text-sm text-gray-500">輸入房間代碼來加入遊戲</p>
               </div>
             </div>
@@ -158,7 +158,10 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
           <div className="p-6">
             <div className="space-y-4">
               <div>
-                <label htmlFor="roomCode" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="roomCode"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   房間代碼
                 </label>
                 <input
@@ -170,15 +173,15 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
                   maxLength={6}
                   autoFocus
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleJoinRoom(e as any);
+                    if (e.key === "Enter") {
+                      handleJoinRoom(
+                        e as unknown as React.FormEvent<HTMLFormElement>,
+                      );
                     }
                   }}
                   className="w-full px-4 py-3 text-lg font-mono text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 uppercase tracking-wider"
                 />
-                {error && (
-                  <p className="mt-2 text-sm text-red-600">{error}</p>
-                )}
+                {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
               </div>
 
               <button
@@ -186,11 +189,11 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
                 disabled={isJoining || !roomCode.trim()}
                 className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
                   isJoining || !roomCode.trim()
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-blue-600 text-white hover:bg-blue-700"
                 }`}
               >
-                {isJoining ? '加入中...' : '加入房間'}
+                {isJoining ? "加入中..." : "加入房間"}
               </button>
             </div>
           </div>
@@ -202,8 +205,10 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
             <Users className="w-4 h-4" />
             測試房間代碼
           </h3>
-          <p className="text-xs text-gray-500 mb-4">你可以使用以下代碼進行測試</p>
-          
+          <p className="text-xs text-gray-500 mb-4">
+            你可以使用以下代碼進行測試
+          </p>
+
           <div className="space-y-2">
             {mockRooms.map((room) => (
               <button
@@ -212,7 +217,9 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
                 className="w-full flex items-center justify-between p-3 text-left border border-gray-200 rounded-md hover:border-blue-300 hover:bg-blue-50 transition-colors"
               >
                 <div>
-                  <span className="font-mono font-medium text-gray-900">{room.code}</span>
+                  <span className="font-mono font-medium text-gray-900">
+                    {room.code}
+                  </span>
                   <span className="ml-2 text-sm text-gray-500">
                     房主: {room.host.nickname}
                   </span>

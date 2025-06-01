@@ -47,8 +47,8 @@ const MainMenu: React.FC<MainMenuProps> = ({
             <p className="text-muted-foreground text-center leading-relaxed">
               建立一個新的遊戲房間，邀請朋友一起玩
             </p>
-            <Button 
-              className="w-full h-12 text-lg font-semibold" 
+            <Button
+              className="w-full h-12 text-lg font-semibold"
               onClick={onCreateRoom}
               size="lg"
             >
@@ -68,9 +68,9 @@ const MainMenu: React.FC<MainMenuProps> = ({
             <p className="text-muted-foreground text-center leading-relaxed">
               使用房間代碼加入朋友的遊戲房間
             </p>
-            <Button 
-              variant="outline" 
-              className="w-full h-12 text-lg font-semibold hover:bg-secondary/20" 
+            <Button
+              variant="outline"
+              className="w-full h-12 text-lg font-semibold hover:bg-secondary/20"
               onClick={onJoinRoom}
               size="lg"
             >

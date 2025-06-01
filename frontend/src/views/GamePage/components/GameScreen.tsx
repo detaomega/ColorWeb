@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import type { Player, Room } from "../types/gameTypes";
+import type { Player, Room } from "../../../types/gameTypes";
 
 interface GameScreenProps {
   room: Room;

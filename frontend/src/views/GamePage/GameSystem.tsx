@@ -5,10 +5,9 @@ import CreateRoom from "./components/CreateRoom";
 import JoinRoom from "./components/JoinRoom";
 import GameLobby from "./components/GameLobby";
 import GameScreen from "./components/GameScreen";
-import type { GameState, Player, Room } from "./types/gameTypes";
-// import "./GameSystem.css";
+import type { GameState, Player, Room } from "../../types/gameTypes";
 
-const App: React.FC = () => {
+const GamePage: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>("nickname");
   const [nickname, setNickname] = useState<string>("");
   const [currentRoom, setCurrentRoom] = useState<Room | null>(null);
@@ -122,4 +121,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default GamePage;

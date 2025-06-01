@@ -1,42 +1,42 @@
-import React, { useState } from "react"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import React, { useState } from "react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface NicknameInputProps {
-  onSubmit: (nickname: string) => void
+  onSubmit: (nickname: string) => void;
 }
 
 const NicknameInput: React.FC<NicknameInputProps> = ({ onSubmit }) => {
-  const [nickname, setNickname] = useState<string>("")
-  const [error, setError] = useState<string>("")
+  const [nickname, setNickname] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!nickname.trim()) {
-      setError("請輸入暱稱")
-      return
+      setError("請輸入暱稱");
+      return;
     }
 
     if (nickname.trim().length < 2) {
-      setError("暱稱至少需要2個字元")
-      return
+      setError("暱稱至少需要2個字元");
+      return;
     }
 
     if (nickname.trim().length > 20) {
-      setError("暱稱不能超過20個字元")
-      return
+      setError("暱稱不能超過20個字元");
+      return;
     }
 
-    setError("")
-    onSubmit(nickname.trim())
-  }
+    setError("");
+    onSubmit(nickname.trim());
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNickname(e.target.value)
-    if (error) setError("")
-  }
+    setNickname(e.target.value);
+    if (error) setError("");
+  };
 
   return (
     <div className="max-w-md mx-auto mt-12 p-6 border rounded-xl shadow-md bg-white space-y-6">
@@ -65,7 +65,7 @@ const NicknameInput: React.FC<NicknameInputProps> = ({ onSubmit }) => {
         </Button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default NicknameInput
+export default NicknameInput;
