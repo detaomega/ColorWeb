@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import type { Player, Room } from "../types/gameTypes";
-import { generateRoomCode } from "../utils/roomUtils";
+import type { Player, Room } from "../../../types/gameTypes";
+import { generateRoomCode } from "../../../utils/roomUtils";
 // import { createRoom } from "../api/CreateRoomApi";
 
 interface CreateRoomProps {
@@ -9,7 +9,6 @@ interface CreateRoomProps {
   onRoomCreated: (room: Room) => void;
   onBack: () => void;
 }
-
 
 const CreateRoom: React.FC<CreateRoomProps> = ({
   player,
@@ -62,7 +61,9 @@ const CreateRoom: React.FC<CreateRoomProps> = ({
           {/* Title */}
           <div className="p-6 border-b border-gray-100">
             <h1 className="text-xl font-semibold text-gray-900">創建房間</h1>
-            <p className="text-sm text-gray-500 mt-1">房主：{player.nickname}</p>
+            <p className="text-sm text-gray-500 mt-1">
+              房主：{player.nickname}
+            </p>
           </div>
 
           {/* Settings */}
@@ -79,8 +80,8 @@ const CreateRoom: React.FC<CreateRoomProps> = ({
                     onClick={() => setMaxPlayers(num)}
                     className={`py-2 px-3 text-sm rounded-md border transition-colors ${
                       maxPlayers === num
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                        : 'border-gray-200 text-gray-700 hover:border-gray-300'
+                        ? "border-blue-500 bg-blue-50 text-blue-700"
+                        : "border-gray-200 text-gray-700 hover:border-gray-300"
                     }`}
                   >
                     {num}
@@ -102,10 +103,10 @@ const CreateRoom: React.FC<CreateRoomProps> = ({
                     disabled={num > maxPlayers}
                     className={`py-2 px-3 text-sm rounded-md border transition-colors ${
                       minPlayers === num
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        ? "border-blue-500 bg-blue-50 text-blue-700"
                         : num > maxPlayers
-                        ? 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'
-                        : 'border-gray-200 text-gray-700 hover:border-gray-300'
+                          ? "border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed"
+                          : "border-gray-200 text-gray-700 hover:border-gray-300"
                     }`}
                   >
                     {num}
@@ -139,11 +140,11 @@ const CreateRoom: React.FC<CreateRoomProps> = ({
               disabled={isCreating || !isValidConfiguration}
               className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
                 isCreating || !isValidConfiguration
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 text-white hover:bg-blue-700"
               }`}
             >
-              {isCreating ? '創建中...' : '創建房間'}
+              {isCreating ? "創建中..." : "創建房間"}
             </button>
           </div>
         </div>

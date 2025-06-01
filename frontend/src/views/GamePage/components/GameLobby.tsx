@@ -99,11 +99,15 @@ const GameLobby: React.FC<GameLobbyProps> = ({
         <div className="space-y-6">
           {/* Room Code Section */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">遊戲大廳</h2>
-            
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              遊戲大廳
+            </h2>
+
             <div className="space-y-4">
               <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">房間代碼</h3>
+                <h3 className="text-sm font-medium text-gray-700 mb-2">
+                  房間代碼
+                </h3>
                 <div className="flex items-center gap-3">
                   <div className="flex-1 bg-gray-50 rounded-md px-4 py-3 font-mono text-lg font-semibold text-gray-900 border">
                     {localRoom.code}
@@ -125,13 +129,17 @@ const GameLobby: React.FC<GameLobbyProps> = ({
                     )}
                   </button>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">分享此代碼給朋友讓他們加入</p>
+                <p className="text-xs text-gray-500 mt-2">
+                  分享此代碼給朋友讓他們加入
+                </p>
               </div>
 
               <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-100">
                 <div className="text-center">
                   <p className="text-sm text-gray-500">房主</p>
-                  <p className="font-medium text-gray-900">{localRoom.host.nickname}</p>
+                  <p className="font-medium text-gray-900">
+                    {localRoom.host.nickname}
+                  </p>
                 </div>
                 <div className="text-center">
                   <p className="text-sm text-gray-500">玩家數量</p>
@@ -141,7 +149,9 @@ const GameLobby: React.FC<GameLobbyProps> = ({
                 </div>
                 <div className="text-center">
                   <p className="text-sm text-gray-500">最少開始人數</p>
-                  <p className="font-medium text-gray-900">{localRoom.minPlayers}</p>
+                  <p className="font-medium text-gray-900">
+                    {localRoom.minPlayers}
+                  </p>
                 </div>
               </div>
             </div>
@@ -162,8 +172,8 @@ const GameLobby: React.FC<GameLobbyProps> = ({
                   key={player.id}
                   className={`flex items-center justify-between p-4 rounded-md border-2 transition-colors ${
                     player.isReady || player.isHost
-                      ? 'border-green-200 bg-green-50'
-                      : 'border-gray-200 bg-gray-50'
+                      ? "border-green-200 bg-green-50"
+                      : "border-gray-200 bg-gray-50"
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -172,7 +182,9 @@ const GameLobby: React.FC<GameLobbyProps> = ({
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-gray-900">{player.nickname}</span>
+                        <span className="font-medium text-gray-900">
+                          {player.nickname}
+                        </span>
                         {player.isHost && (
                           <span className="inline-flex items-center gap-1 bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
                             <Crown className="w-3 h-3" />
@@ -185,11 +197,13 @@ const GameLobby: React.FC<GameLobbyProps> = ({
 
                   <div className="flex items-center gap-2">
                     {player.isHost ? (
-                      <span className="text-sm font-medium text-yellow-700">主持人</span>
+                      <span className="text-sm font-medium text-yellow-700">
+                        主持人
+                      </span>
                     ) : (
                       <span
                         className={`flex items-center gap-1 text-sm font-medium ${
-                          player.isReady ? 'text-green-700' : 'text-gray-500'
+                          player.isReady ? "text-green-700" : "text-gray-500"
                         }`}
                       >
                         {player.isReady ? (
@@ -218,11 +232,11 @@ const GameLobby: React.FC<GameLobbyProps> = ({
                 onClick={toggleReady}
                 className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
                   currentPlayerInRoom?.isReady
-                    ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    : 'bg-green-600 text-white hover:bg-green-700'
+                    ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    : "bg-green-600 text-white hover:bg-green-700"
                 }`}
               >
-                {currentPlayerInRoom?.isReady ? '取消準備' : '準備完成'}
+                {currentPlayerInRoom?.isReady ? "取消準備" : "準備完成"}
               </button>
             )}
 
@@ -233,8 +247,8 @@ const GameLobby: React.FC<GameLobbyProps> = ({
                   disabled={!canStartGame()}
                   className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
                     canStartGame()
-                      ? 'bg-blue-600 text-white hover:bg-blue-700'
-                      : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      ? "bg-blue-600 text-white hover:bg-blue-700"
+                      : "bg-gray-100 text-gray-400 cursor-not-allowed"
                   }`}
                 >
                   開始遊戲
