@@ -8,7 +8,7 @@ import GameScreen from "./components/GameScreen";
 import type { GameState, Player, Room } from "./types/gameTypes";
 import "./GameSystem.css";
 
-const App: React.FC = () => {
+const GameSystem: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>("nickname");
   const [nickname, setNickname] = useState<string>("");
   const [currentRoom, setCurrentRoom] = useState<Room | null>(null);
@@ -116,10 +116,10 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="app">
+    <div className="">
       <div className="container">{renderCurrentScreen()}</div>
     </div>
   );
 };
 
-export default App;
+export default GameSystem;
