@@ -1,23 +1,8 @@
 import React, { useState } from "react";
-import { ArrowLeft, Users, Settings } from "lucide-react";
-
-// Mock types (replace with your actual types)
-interface Player {
-  id: string;
-  nickname: string;
-  isHost?: boolean;
-}
-
-interface Room {
-  id: string;
-  code: string;
-  host: Player;
-  players: Player[];
-  maxPlayers: number;
-  minPlayers: number;
-  isGameStarted: boolean;
-  createdAt: Date;
-}
+import { ArrowLeft } from "lucide-react";
+import type { Player, Room } from "../types/gameTypes";
+import { generateRoomCode } from "../utils/roomUtils";
+// import { createRoom } from "../api/CreateRoomApi";
 
 interface CreateRoomProps {
   player: Player;
@@ -25,10 +10,6 @@ interface CreateRoomProps {
   onBack: () => void;
 }
 
-// Mock utility function
-const generateRoomCode = () => {
-  return Math.random().toString(36).substr(2, 6).toUpperCase();
-};
 
 const CreateRoom: React.FC<CreateRoomProps> = ({
   player,
