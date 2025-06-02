@@ -52,3 +52,38 @@ export interface AnswerResult {
   totalScore: number;
   message?: string;
 }
+
+export interface GameCreate {
+  gameTitle: string;
+  settings: {
+    revealInterval: number;
+    answerTime: number;
+    maxPointsPerQuestion: number;
+    rounds: number;
+  };
+  hostId: string;
+}
+
+export interface GameInfo {
+  gameId: string;
+  gameTitle: string;
+  status: string;
+  settings: {
+    revealInterval: number;
+    answerTime: number;
+    maxPointsPerQuestion: number;
+    rounds: number;
+  };
+  players: Array<{
+    username: string;
+    score: number;
+    joinedAt: string;
+    rank: number;
+  }>;
+  currentQuestionNumber: number;
+  startedAt: string;
+  finishedAt: string | null;
+  createdAt: string;
+  hostId: string;
+  questionCount?: number;
+}
