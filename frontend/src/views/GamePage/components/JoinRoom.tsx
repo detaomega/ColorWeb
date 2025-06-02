@@ -1,24 +1,7 @@
 import React, { useState } from "react";
 import { ArrowLeft, LogIn, Users } from "lucide-react";
-
-// Mock types (replace with your actual types)
-interface Player {
-  id: string;
-  nickname: string;
-  isHost?: boolean;
-  isReady?: boolean;
-}
-
-interface Room {
-  id: string;
-  code: string;
-  host: Player;
-  players: Player[];
-  maxPlayers: number;
-  minPlayers: number;
-  isGameStarted: boolean;
-  createdAt: Date;
-}
+// 使用外部类型定义
+import type { Player, Room } from "../../../types/gameTypes";
 
 interface JoinRoomProps {
   player: Player;
@@ -26,15 +9,20 @@ interface JoinRoomProps {
   onBack: () => void;
 }
 
-// Mock data for testing
+// Mock data for testing - 使用与外部类型完全兼容的数据结构
 const mockRooms: Room[] = [
   {
     id: "1",
     code: "ABC123",
-    host: { id: "host1", nickname: "Alice" },
+    host: { 
+      id: "host1", 
+      nickname: "Alice", 
+      isHost: true, 
+      isReady: true 
+    },
     players: [
-      { id: "host1", nickname: "Alice", isHost: true },
-      { id: "2", nickname: "Bob" },
+      { id: "host1", nickname: "Alice", isHost: true, isReady: true },
+      { id: "2", nickname: "Bob", isHost: false, isReady: false },
     ],
     maxPlayers: 8,
     minPlayers: 3,
@@ -44,8 +32,13 @@ const mockRooms: Room[] = [
   {
     id: "2",
     code: "XYZ789",
-    host: { id: "host2", nickname: "Charlie" },
-    players: [{ id: "host2", nickname: "Charlie", isHost: true }],
+    host: { 
+      id: "host2", 
+      nickname: "Charlie", 
+      isHost: true, 
+      isReady: true 
+    },
+    players: [{ id: "host2", nickname: "Charlie", isHost: true, isReady: true }],
     maxPlayers: 6,
     minPlayers: 2,
     isGameStarted: false,
@@ -108,10 +101,24 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
       return;
     }
 
-    // 加入房間
+    // 创建符合类型要求的新玩家对象
+    const newPlayer: Player = {
+      id: player.id,
+      nickname: player.nickname,
+      isHost: false,      // 加入的玩家不是房主
+      isReady: false      // 新加入的玩家默认未准备
+    };
+
+    // 创建更新后的房间，确保所有类型都正确
     const updatedRoom: Room = {
-      ...targetRoom,
-      players: [...targetRoom.players, { ...player, isReady: false }],
+      id: targetRoom.id,
+      code: targetRoom.code,
+      host: targetRoom.host,
+      players: [...targetRoom.players, newPlayer],
+      maxPlayers: targetRoom.maxPlayers,
+      minPlayers: targetRoom.minPlayers,
+      isGameStarted: targetRoom.isGameStarted,
+      createdAt: targetRoom.createdAt,
     };
 
     setIsJoining(false);
