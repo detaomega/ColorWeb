@@ -1,18 +1,32 @@
+# docker-compose.yml - Fixed version with proper dataset mounting
 version: '3'
 services:
   app:
-    build: ./backend
+    build: .
     ports:
       - "3000:3000"
     env_file: 
       - .env
     environment:
       - MONGO_URL=${MONGO_URL}
+      # Optional: Override dataset paths if needed
+      - DATASET_PATH=/app/dataset_resized
+      - ALTERNATIVES_FILE=/app/dataset_resized/alternative.js
     depends_on:
       - webproj_mongo
     volumes:
-      - ./backend:/usr/src/app
+      # Your existing application code volumes
+      - .:/usr/src/app
       - /usr/src/app/node_modules
+      
+      # FIXED: Mount your dataset directory into the container
+      # This makes your local create_data/dataset_resized folder available at /app/dataset_resized inside the container
+      - ./create_data/dataset_resized:/app/dataset_resized:ro  # :ro means read-only for safety
+      
+      # Create a persistent volume for processed images
+      # This ensures images persist even if container is recreated
+      - anime_images:/usr/src/app/public/images
+      
     restart: unless-stopped
     
   webproj_mongo:
@@ -22,12 +36,15 @@ services:
     volumes:
       - mongo-data:/data/db
     restart: unless-stopped
-  frontend:
-    build: ./frontend
-    ports:
-      - "5000:5000"
-    depends_on:
-      - app
+    # Add health check to ensure MongoDB is fully ready before app starts
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
 volumes:
   mongo-data:
+  # Volume for storing processed anime images that persist across container restarts
+  anime_images:

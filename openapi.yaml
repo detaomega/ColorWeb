@@ -1,0 +1,976 @@
+openapi: 3.0.3
+info:
+  title: Game API
+  description: API for managing games, players, and questions in a gaming system
+  version: 1.0.0
+  contact:
+    name: Game API Support
+    email: support@gameapi.com
+
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+
+paths:
+  # Game Routes
+  /games:
+    post:
+      tags:
+        - Games
+      summary: Create a new game
+      description: Creates a new game instance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gameTitle:
+                  type: string
+                  description: Game title (defaults to "Anime Guessing Game")
+                settings:
+                  type: object
+                  description: Game configuration settings (optional)
+      responses:
+        '201':
+          description: Game created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  game:
+                    $ref: '#/components/schemas/Game'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /games/{gameId}:
+    get:
+      tags:
+        - Games
+      summary: Get specific game information
+      description: Retrieves game information including player rankings
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Game ID
+      responses:
+        '200':
+          description: Game information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  game:
+                    allOf:
+                      - $ref: '#/components/schemas/Game'
+                      - type: object
+                        properties:
+                          players:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/RankedPlayer'
+                          questionCount:
+                            type: integer
+        '404':
+          description: Game not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /games/{gameId}/settings:
+    patch:
+      tags:
+        - Games
+      summary: Update game settings
+      description: Updates the configuration settings of a specific game
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Game ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                settings:
+                  type: object
+                  description: Updated game settings
+      responses:
+        '200':
+          description: Game settings updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  game:
+                    $ref: '#/components/schemas/Game'
+        '400':
+          description: Game cannot be updated (not in waiting status)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Game not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /games/{gameId}/players:
+    post:
+      tags:
+        - Players
+      summary: Add player to game
+      description: Adds a new player to the specified game
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Game ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Player username
+              required:
+                - username
+      responses:
+        '201':
+          description: Player added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  player:
+                    $ref: '#/components/schemas/Player'
+        '400':
+          description: Bad request (missing username or game not in waiting status)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Game not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Username already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - Players
+      summary: Get game players
+      description: Retrieves all players in the specified game
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Game ID
+      responses:
+        '200':
+          description: Players retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  players:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RankedPlayer'
+        '404':
+          description: Game not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /games/{gameId}/start:
+    post:
+      tags:
+        - Games
+      summary: Start game
+      description: Starts the specified game
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Game ID
+      responses:
+        '200':
+          description: Game started successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  game:
+                    $ref: '#/components/schemas/Game'
+                  totalQuestions:
+                    type: integer
+        '400':
+          description: Game cannot be started (no players, no questions, or not in waiting status)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Game not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /games/{gameId}/end:
+    post:
+      tags:
+        - Games
+      summary: End game
+      description: Ends the specified game
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Game ID
+      responses:
+        '200':
+          description: Game ended successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  game:
+                    $ref: '#/components/schemas/Game'
+                  players:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RankedPlayer'
+        '400':
+          description: Game is not in active status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Game not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /games/{gameId}/results:
+    get:
+      tags:
+        - Games
+      summary: Get game results
+      description: Retrieves the final results of the completed game
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Game ID
+      responses:
+        '200':
+          description: Game results retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  game:
+                    $ref: '#/components/schemas/Game'
+                  players:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RankedPlayer'
+                  gameStats:
+                    $ref: '#/components/schemas/GameStats'
+        '400':
+          description: Game is not finished yet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Game not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # Question Routes
+  /questions:
+    post:
+      tags:
+        - Questions
+      summary: Create a new anime question
+      description: Creates a new anime question with image sets for use in games
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                animeTitle:
+                  type: string
+                  description: Main anime title
+                alternativeTitles:
+                  type: array
+                  items:
+                    type: string
+                  description: Alternative titles for the anime (optional)
+                imageSets:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ImageSetInput'
+                  description: Image sets for the question (minimum 1 set)
+              required:
+                - animeTitle
+                - imageSets
+      responses:
+        '201':
+          description: Question created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  question:
+                    $ref: '#/components/schemas/Question'
+        '400':
+          description: Bad request (missing required fields or invalid image sets)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /games/{gameId}/questions:
+    post:
+      tags:
+        - Questions
+      summary: Add random questions to game
+      description: Adds randomly selected questions to the specified game
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Game ID
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                count:
+                  type: integer
+                  default: 10
+                  description: Number of questions to add (default: 10)
+      responses:
+        '200':
+          description: Questions added to game successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  count:
+                    type: integer
+                    description: Number of questions actually added
+        '400':
+          description: Game not in waiting status or no valid questions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Game not found or no questions available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /games/{gameId}/question:
+    get:
+      tags:
+        - Questions
+      summary: Get current question
+      description: Retrieves the current active question in the game with images and answer information
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Game ID
+      responses:
+        '200':
+          description: Current question retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  questionId:
+                    type: string
+                    description: Game question ID
+                  questionOrder:
+                    type: integer
+                    description: Question order number
+                  images:
+                    type: array
+                    items:
+                      type: string
+                    description: Array of image URLs for current question
+                  animeTitle:
+                    type: string
+                    description: Correct anime title
+                  alternativeTitles:
+                    type: array
+                    items:
+                      type: string
+                    description: Alternative acceptable titles
+        '400':
+          description: Game is not in active status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Game or question not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /games/{gameId}/question/next:
+    post:
+      tags:
+        - Questions
+      summary: Start next question
+      description: Moves to and starts the next question in the game, or ends the game if no more questions
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Game ID
+      responses:
+        '200':
+          description: Next question started successfully or game completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  questionNumber:
+                    type: integer
+                    description: Current question number (only if game continues)
+                  totalQuestions:
+                    type: integer
+                    description: Total number of questions (only if game continues)
+                  gameComplete:
+                    type: boolean
+                    description: Whether the game has been completed
+        '400':
+          description: Game is not in active status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Game not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /games/{gameId}/question/answer:
+    post:
+      tags:
+        - Questions
+      summary: Submit score for current question
+      description: Submits a player's score for the current question and updates their total score
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Game ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Player username
+                score:
+                  type: integer
+                  description: Score to add to player's total (will be set to 0 if negative)
+              required:
+                - username
+                - score
+      responses:
+        '200':
+          description: Score updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  score:
+                    type: integer
+                    description: Score added this round
+                  totalScore:
+                    type: integer
+                    description: Player's total score
+        '400':
+          description: Missing required fields or game not in active status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Game or player not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /games/{gameId}/rankings:
+    get:
+      tags:
+        - Questions
+      summary: Get player rankings
+      description: Retrieves current player rankings in the game sorted by score
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Game ID
+      responses:
+        '200':
+          description: Player rankings retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  rankings:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlayerRanking'
+        '404':
+          description: Game not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Game:
+      type: object
+      properties:
+        gameId:
+          type: string
+          description: Unique game ID (8 characters)
+        gameTitle:
+          type: string
+          description: Game title
+        status:
+          type: string
+          enum: [waiting, active, finished]
+          description: Current game status
+        settings:
+          type: object
+          description: Game configuration settings
+        players:
+          type: array
+          items:
+            $ref: '#/components/schemas/Player'
+        currentQuestionNumber:
+          type: integer
+          description: Current question number (starts from 1)
+        createdAt:
+          type: string
+          format: date-time
+        startedAt:
+          type: string
+          format: date-time
+        finishedAt:
+          type: string
+          format: date-time
+
+    Player:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Player username
+        score:
+          type: integer
+          description: Current player score
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerAnswer'
+          description: Player's answer history
+
+    RankedPlayer:
+      type: object
+      properties:
+        username:
+          type: string
+        score:
+          type: integer
+        rank:
+          type: integer
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerAnswer'
+
+    PlayerAnswer:
+      type: object
+      properties:
+        questionId:
+          type: string
+        answer:
+          type: string
+        isCorrect:
+          type: boolean
+        points:
+          type: integer
+        answeredAt:
+          type: string
+          format: date-time
+
+    GameStats:
+      type: object
+      properties:
+        totalQuestions:
+          type: integer
+        totalAnswers:
+          type: integer
+        correctAnswers:
+          type: integer
+        correctPercentage:
+          type: integer
+        averageScore:
+          type: integer
+        gameDuration:
+          type: integer
+          description: Game duration in seconds
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          description: Error message
+        error:
+          type: string
+          description: Detailed error information (optional)
+
+    Question:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Question ID
+        animeTitle:
+          type: string
+          description: Main anime title
+        alternativeTitles:
+          type: array
+          items:
+            type: string
+          description: Alternative acceptable titles
+        imageSets:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageSet'
+          description: Image sets for the question
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ImageSet:
+      type: object
+      properties:
+        setId:
+          type: string
+          description: Unique set ID (UUID)
+        setName:
+          type: string
+          description: Name of the image set
+        images:
+          type: array
+          items:
+            type: string
+          description: Array of image URLs (minimum 3 images required)
+
+    ImageSetInput:
+      type: object
+      properties:
+        setId:
+          type: string
+          description: Unique set ID (optional, will be generated if not provided)
+        setName:
+          type: string
+          description: Name of the image set
+        images:
+          type: array
+          items:
+            type: string
+          description: Array of image URLs (minimum 3 images required)
+          minItems: 3
+      required:
+        - images
+
+    PlayerRanking:
+      type: object
+      properties:
+        rank:
+          type: integer
+          description: Player's current rank (1-based)
+        username:
+          type: string
+          description: Player username
+        score:
+          type: integer
+          description: Player's total score
+
+    QuestionInput:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Question text
+        options:
+          type: array
+          items:
+            type: string
+          description: Multiple choice options
+        correctAnswer:
+          type: string
+          description: Correct answer
+        points:
+          type: integer
+          description: Points for correct answer
+        timeLimit:
+          type: integer
+          description: Time limit in seconds
+      required:
+        - text
+        - correctAnswer
+
+    GameResults:
+      type: object
+      properties:
+        gameId:
+          type: string
+        winner:
+          $ref: '#/components/schemas/PlayerRanking'
+        rankings:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerRanking'
+        totalQuestions:
+          type: integer
+        gameStartTime:
+          type: string
+          format: date-time
+        gameEndTime:
+          type: string
+          format: date-time
+
+tags:
+  - name: Games
+    description: Game management operations
+  - name: Players
+    description: Player management operations
+  - name: Questions
+    description: Question management operations
