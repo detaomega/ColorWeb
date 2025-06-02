@@ -114,11 +114,7 @@ const GamePage: React.FC = () => {
     }
   };
 
-  return (
-    <div className="app">
-      <div className="container">{renderCurrentScreen()}</div>
-    </div>
-  );
+  return <div>{renderCurrentScreen()}</div>;
 };
 
 export default GamePage;
