@@ -3,9 +3,12 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors'); // 添加 CORS
 const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
+const http = require('http');
+const { initSocket } = require('./socketServer');
 
 // 讀取你的 openapi.yaml
 const swaggerDocument = YAML.load('./openapi.yaml');
@@ -15,12 +18,24 @@ const gameRoute = require('./routes/gameRoute');
 const questionRoute = require('./routes/questionRoute');
 
 const app = express();
+const server = http.createServer(app); // ✅ 創建 HTTP 伺服器
 
-// 設定 Swagger UI 路由
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// ✅ 初始化 Socket.io（要在設定 CORS 之後）
+initSocket(server);
+
+// ✅ CORS 設定 - 要在其他 middleware 之前
+app.use(cors({
+  origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
+}));
 
 // 中間件
 app.use(bodyParser.json());
+
+// 設定 Swagger UI 路由
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // 靜態文件服務（用於圖片）
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
@@ -47,8 +62,32 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 啟動伺服器
+// ✅ 啟動伺服器 - 使用 server.listen 而不是 app.listen
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`伺服器運行在端口 ${PORT}`);
+  console.log(`Swagger 文檔: http://localhost:${PORT}/api-docs`);
+});
+
+// ✅ 優雅關閉處理
+process.on('SIGTERM', () => {
+  console.log('收到 SIGTERM 信號，正在關閉伺服器...');
+  server.close(() => {
+    console.log('HTTP 伺服器已關閉');
+    mongoose.connection.close(() => {
+      console.log('MongoDB 連接已關閉');
+      process.exit(0);
+    });
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('收到 SIGINT 信號，正在關閉伺服器...');
+  server.close(() => {
+    console.log('HTTP 伺服器已關閉');
+    mongoose.connection.close(() => {
+      console.log('MongoDB 連接已關閉');
+      process.exit(0);
+    });
+  });
 });
