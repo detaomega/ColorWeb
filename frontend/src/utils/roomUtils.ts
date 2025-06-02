@@ -20,7 +20,7 @@ export const generateRoomCode = (length: number = 6): string => {
  * @returns 是否有效
  */
 export const validateRoomCode = (code: string): boolean => {
-  const codeRegex = /^[A-Z0-9]{6}$/;
+  const codeRegex = /^[A-Z0-9]{8}$/;
   return codeRegex.test(code);
 };
 

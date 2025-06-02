@@ -5,6 +5,8 @@ import { generateRoomCode } from "../../../utils/roomUtils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { createGame } from "@/services/gameService";
+
 // import { createRoom } from "../api/CreateRoomApi";
 
 interface CreateRoomProps {
@@ -24,12 +26,24 @@ const CreateRoom: React.FC<CreateRoomProps> = ({
 
   const handleCreateRoom = async () => {
     setIsCreating(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    const roomCode = generateRoomCode();
+    const result = await createGame({
+      gameTitle: "Anime Guessing Game",
+      settings: {
+        revealInterval: 5,
+        answerTime: 20,
+        maxPointsPerQuestion: 100,
+        rounds: 7
+      },
+      hostId: player.nickname
+    });
+    
+    
+    const roomCode = result.game.gameId;
+    const _id = result.game._id;
     const hostPlayer = { ...player, isHost: true };
 
     const newRoom: Room = {
-      id: Math.random().toString(36).substr(2, 9),
+      id: _id,
       code: roomCode,
       host: hostPlayer,
       players: [hostPlayer],

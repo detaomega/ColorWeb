@@ -35,7 +35,7 @@ interface JoinRoomProps {
 const mockRooms: Room[] = [
   {
     id: "1",
-    code: "ABC123",
+    code: "ABC12345",
     host: { id: "host1", nickname: "Alice" },
     players: [
       { id: "host1", nickname: "Alice", isHost: true },
@@ -48,7 +48,7 @@ const mockRooms: Room[] = [
   },
   {
     id: "2",
-    code: "XYZ789",
+    code: "XYZ78912",
     host: { id: "host2", nickname: "Charlie" },
     players: [{ id: "host2", nickname: "Charlie", isHost: true }],
     maxPlayers: 6,
@@ -169,7 +169,7 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
                   type="text"
                   value={roomCode}
                   onChange={handleInputChange}
-                  placeholder="輸入 6 位房間代碼"
+                  placeholder="輸入 8 位房間代碼"
                   maxLength={6}
                   autoFocus
                   onKeyDown={(e) => {
@@ -265,7 +265,7 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
           <Card className="max-w-2xl mx-auto bg-blue-50/50 border-blue-200/50">
             <CardContent className="p-6">
               <p className="text-muted-foreground text-lg">
-                💡 房間代碼由房主提供，通常為 6 位字母和數字組合
+                💡 房間代碼由房主提供，通常為 8 位大寫字母和數字組合
               </p>
             </CardContent>
           </Card>

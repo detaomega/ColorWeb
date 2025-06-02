@@ -64,6 +64,27 @@ export interface GameCreate {
   hostId: string;
 }
 
+export interface CreateGameResponse {
+  success: boolean;
+  message: string;
+  game: {
+    gameId: string;
+    gameTitle: string;
+    status: string;
+    currentQuestionNumber: number;
+    settings: {
+      revealInterval: number;
+      answerTime: number;
+      maxPointsPerQuestion: number;
+      rounds: number;
+    };
+    players: any[];
+    _id: string;
+    createdAt: string;
+    __v: number;
+  };
+}
+
 export interface GameInfo {
   gameId: string;
   gameTitle: string;
