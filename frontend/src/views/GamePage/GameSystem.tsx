@@ -115,8 +115,10 @@ const GamePage: React.FC = () => {
   };
 
   return (
-    <div className="app">
-      <div className="container">{renderCurrentScreen()}</div>
+    <div className="w-full min-h-screen flex flex-col">
+      <div className="flex-1 w-full max-w-full mx-auto">
+        {renderCurrentScreen()}
+      </div>
     </div>
   );
 };
