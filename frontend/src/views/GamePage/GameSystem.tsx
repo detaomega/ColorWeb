@@ -4,7 +4,6 @@ import MainMenu from "./components/MainMenu";
 import CreateRoom from "./components/CreateRoom";
 import JoinRoom from "./components/JoinRoom";
 import GameLobby from "./components/GameLobby";
-import GameScreen from "./components/GameScreen";
 import type { GameState, Player, Room } from "../../types/gameTypes";
 
 const GamePage: React.FC = () => {
