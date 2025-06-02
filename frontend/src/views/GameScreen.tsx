@@ -1,56 +1,57 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Clock, Users, Send, Loader2, Trophy } from "lucide-react";
-import type {
-  Question,
-  PlayerRanking,
-  AnswerResult,
-  Room,
-  GameConfig
-} from "../types/gameTypes";
+import { Clock, Users, Send, Loader2, Trophy, Timer, Star } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
-interface GameProps {
-  room: Room;
-  gameconfig: GameConfig;
-  // onStartGame: () => void;
-  // onBack: () => void;
-}
+type Question = {
+  id: string;
+  images: string[];
+  answer: string;
+};
 
-// 遊戲狀態
+type PlayerRanking = {
+  playerId: string;
+  playerName: string;
+  score: number;
+  rank: number;
+};
+
+type AnswerResult = {
+  correct: boolean;
+  score: number;
+  totalScore: number;
+  message?: string;
+};
+
 type PlayerState = "waiting" | "playing" | "loading" | "finished" | "rankings";
 
-// const QuizGameComponent = ()
-const QuizGameComponent: React.FC<GameProps> = ({
-  room,
-  gameconfig
-})=> {
+const QuizGameComponent = () => {
   // ##############全域遊戲基本資料##############
-  // game data
-  const [gameId] = useState(room.code);
-  const [totalPlayers] = useState(room.players.length);// need to keep update
-  const [totalQuestions] = useState(gameconfig.totalQuestion);
-  // question control
+  const [gameId] = useState("game-123");
+  const [totalPlayers] = useState(4);
+  const [totalQuestions] = useState(5);
   const [completedPlayers, setCompletedPlayers] = useState(0);
-  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null); //包含該題答案
+  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
   // ##############玩家個人遊戲基本資料##############
   const [gameState, setGameState] = useState<PlayerState>("waiting");
-  // initialize question data
   const [timeLeft, setTimeLeft] = useState(35);
   const [userAnswer, setUserAnswer] = useState("");
   const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1);
-  // initialize player data
   const [currentScore, setCurrentScore] = useState(0);
   const [rankings, setRankings] = useState<PlayerRanking[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // player answering state
   const [answerFeedback, setAnswerFeedback] = useState<string | null>(null);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
-  // system data
   const [apiError, setApiError] = useState<string | null>(null);
   const [wrongAttempts, setWrongAttempts] = useState(0);
 
   // ##############後端API基礎##############
-  // 後端函式呼叫
   const apiCall = async (url: string, options?: RequestInit) => {
     try {
       const response = await fetch(url, {
@@ -74,7 +75,6 @@ const QuizGameComponent: React.FC<GameProps> = ({
   };
 
   // ##############遊戲過程區塊##############
-  // 獲取下一題的圖片與答案
   const fetchQuestion = useCallback(async () => {
     try {
       setApiError(null);
@@ -94,11 +94,11 @@ const QuizGameComponent: React.FC<GameProps> = ({
       const mockQuestion: Question = {
         id: `question-${currentQuestionNumber}`,
         images: [
-          "https://picsum.photos/400/300?random=1",
-          "https://picsum.photos/400/300?random=2",
-          "https://picsum.photos/400/300?random=3",
-          "https://picsum.photos/400/300?random=4",
-          "https://picsum.photos/400/300?random=5",
+          "https://picsum.photos/600/400?random=1",
+          "https://picsum.photos/600/400?random=2", 
+          "https://picsum.photos/600/400?random=3",
+          "https://picsum.photos/600/400?random=4",
+          "https://picsum.photos/600/400?random=5",
         ],
         answer: "Example",
       };
@@ -114,7 +114,7 @@ const QuizGameComponent: React.FC<GameProps> = ({
       setGameState("playing");
     }
   }, [gameId, currentQuestionNumber]);
-  // 進入下一題或結算
+
   const startNextQuestion = async () => {
     try {
       setApiError(null);
@@ -122,11 +122,10 @@ const QuizGameComponent: React.FC<GameProps> = ({
         method: "POST",
       });
 
-      setCurrentQuestionNumber((prev) => prev + 1);//x += 1
+      setCurrentQuestionNumber((prev) => prev + 1);
       await fetchQuestion();
     } catch (error) {
       console.error("Api failed:", error);
-      // 如果API失敗，仍然繼續到下一題
       if (currentQuestionNumber < totalQuestions) {
         setCurrentQuestionNumber((prev) => prev + 1);
         await fetchQuestion();
@@ -167,7 +166,6 @@ const QuizGameComponent: React.FC<GameProps> = ({
     return () => clearInterval(timer);
   }, [gameState, timeLeft, isAnswerCorrect]);
 
-  // 時間到處理(時間到，自動進入下一題或結束遊戲)
   const handleTimeUp = useCallback(async () => {
     if (gameState !== "playing") return;
 
@@ -175,7 +173,6 @@ const QuizGameComponent: React.FC<GameProps> = ({
     setAnswerFeedback("時間到！進入下一題");
     setGameState("loading");
 
-    // 等待一下讓玩家看到訊息
     setTimeout(async () => {
       if (currentQuestionNumber < totalQuestions) {
         await startNextQuestion();
@@ -186,12 +183,10 @@ const QuizGameComponent: React.FC<GameProps> = ({
     }, 2000);
   }, [gameState, currentQuestionNumber, totalQuestions]);
 
-  // 格式化時間顯示
   const formatTime = (seconds: number) => {
     return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, "0")}`;
   };
 
-  // 提交答案
   const handleSubmitAnswer = useCallback(async () => {
     if (
       gameState !== "playing" ||
@@ -205,22 +200,17 @@ const QuizGameComponent: React.FC<GameProps> = ({
     console.log("提交答案:", userAnswer);
 
     try {
-      // 提交答案並獲取結果
       const result = await submitAnswerAndGetScore(userAnswer);
       console.log("答題結果:", result);
 
       setCurrentScore(result.totalScore);
 
       if (result.correct) {
-        // 答對了！
         setIsAnswerCorrect(true);
         setAnswerFeedback(result.message || "恭喜答對！");
-
-        // 模擬玩家完成答題
         setCompletedPlayers((prev) => prev + 1);
         setGameState("loading");
 
-        // 等待其他玩家完成（實際應該通過WebSocket監聽）
         setTimeout(async () => {
           if (currentQuestionNumber < totalQuestions) {
             await startNextQuestion();
@@ -230,12 +220,11 @@ const QuizGameComponent: React.FC<GameProps> = ({
           }
         }, 3000);
       } else {
-        // 答錯了，增加錯誤次數並讓玩家繼續作答
         setWrongAttempts((prev) => prev + 1);
         setAnswerFeedback(
           result.message || `答案錯誤！這是第 ${wrongAttempts + 1} 次錯誤嘗試`,
         );
-        setUserAnswer(""); // 清空輸入框讓玩家重新輸入
+        setUserAnswer("");
       }
     } catch (error) {
       console.error("提交答案過程出錯:", error);
@@ -253,7 +242,6 @@ const QuizGameComponent: React.FC<GameProps> = ({
     wrongAttempts,
   ]);
 
-  // 提交答案並獲取分數
   const submitAnswerAndGetScore = async (answer: string) => {
     try {
       setApiError(null);
@@ -262,7 +250,6 @@ const QuizGameComponent: React.FC<GameProps> = ({
         body: JSON.stringify({ answer }),
       });
 
-      // 假設API返回 { correct: boolean, score: number, totalScore: number, message?: string }
       return {
         correct: result.correct || false,
         score: result.score || 0,
@@ -271,8 +258,7 @@ const QuizGameComponent: React.FC<GameProps> = ({
       } as AnswerResult;
     } catch (error) {
       console.error("提交答案失敗:", error);
-      // 如果API失敗，返回模擬結果
-      const isCorrect = answer.toLowerCase().includes("範例"); // 模擬正確率
+      const isCorrect = answer.toLowerCase().includes("範例");
       const score = isCorrect ? Math.floor(Math.random() * 100) + 50 : 0;
       return {
         correct: isCorrect,
@@ -283,15 +269,6 @@ const QuizGameComponent: React.FC<GameProps> = ({
     }
   };
 
-  // 錯誤顯示組件
-  const ErrorMessage = ({ message }: { message: string }) => (
-    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-      <strong>Error</strong> {message}
-    </div>
-  );
-
-  // ##############遊戲畫面##############
-  // 開始新遊戲
   const startGame = () => {
     setCurrentQuestionNumber(1);
     setCurrentScore(0);
@@ -301,7 +278,7 @@ const QuizGameComponent: React.FC<GameProps> = ({
     setApiError(null);
     fetchQuestion();
   };
-  // 載入排名頁面
+
   const fetchRankings = async () => {
     try {
       setApiError(null);
@@ -309,7 +286,6 @@ const QuizGameComponent: React.FC<GameProps> = ({
       setRankings(rankingsData);
     } catch (error) {
       console.error("獲取排名失敗:", error);
-      // 如果API失敗，使用模擬排名數據
       const mockRankings: PlayerRanking[] = [
         { playerId: "1", playerName: "玩家1", score: currentScore, rank: 1 },
         { playerId: "2", playerName: "玩家2", score: 0, rank: 2 },
@@ -319,339 +295,350 @@ const QuizGameComponent: React.FC<GameProps> = ({
       setRankings(mockRankings);
     }
   };
-  // 等待畫面(應連接其他頁面)
+
+  // 等待畫面
   if (gameState === "waiting") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
-        <div className="bg-white rounded-2xl p-8 text-center shadow-2xl max-w-md">
-          <h1 className="text-3xl font-bold text-gray-800 mb-6">
-            準備開始遊戲
-          </h1>
-          {apiError && <ErrorMessage message={apiError} />}
-          <div className="mb-4 text-gray-600">
-            <p>遊戲ID: {gameId}</p>
-            <p>當前分數: {currentScore}</p>
-          </div>
-          <button
-            onClick={startGame}
-            className="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-8 py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105"
-          >
-            開始遊戲
-          </button>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-blue-600 flex items-center justify-center p-6">
+        <Card className="w-full max-w-lg shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
+          <CardHeader className="text-center space-y-4">
+            <div className="mx-auto w-20 h-20 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full flex items-center justify-center">
+              <Trophy className="w-10 h-10 text-white" />
+            </div>
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+              準備開始遊戲
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {apiError && (
+              <Alert variant="destructive" className="border-red-200">
+                <AlertDescription>{apiError}</AlertDescription>
+              </Alert>
+            )}
+            <div className="text-center space-y-2 text-muted-foreground">
+              <p>遊戲ID: <Badge variant="secondary">{gameId}</Badge></p>
+              <p>當前分數: <Badge variant="outline">{currentScore}</Badge></p>
+            </div>
+            <Button 
+              onClick={startGame} 
+              className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 shadow-lg"
+            >
+              開始遊戲
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
+
   // 載入等待畫面
   if (gameState === "loading") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
-        <div className="bg-white rounded-2xl p-12 text-center shadow-2xl">
-          <div className="animate-spin mb-6">
-            <Loader2 className="w-16 h-16 text-indigo-600 mx-auto" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            等待其他玩家
-          </h2>
-          <p className="text-gray-600 mb-6">
-            已完成：{completedPlayers}/{totalPlayers} 位玩家
-          </p>
-          <div className="flex justify-center space-x-2">
-            {[...Array(totalPlayers)].map((_, index) => (
-              <div
-                key={index}
-                className={`w-4 h-4 rounded-full transition-all duration-500 ${
-                  index < completedPlayers
-                    ? "bg-green-500 animate-pulse"
-                    : "bg-gray-300"
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-  // 排名畫面(應接去其他人的遊玩畫面，下為mock version)
-  if (gameState === "rankings") {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-500 to-orange-600 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl p-8 shadow-2xl max-w-2xl w-full">
-          <div className="text-center mb-8">
-            <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
-              🏆 遊戲結果
-            </h1>
-            <p className="text-gray-600">你的總分數: {currentScore} 分</p>
-          </div>
-
-          {apiError && <ErrorMessage message={apiError} />}
-
-          <div className="space-y-4 mb-8">
-            <h2 className="text-xl font-bold text-gray-800 text-center">
-              Ranking
-            </h2>
-            {rankings.map((player, index) => (
-              <div
-                key={player.playerId}
-                className={`flex items-center justify-between p-4 rounded-lg ${
-                  index === 0
-                    ? "bg-yellow-100 border-2 border-yellow-400"
-                    : index === 1
-                      ? "bg-gray-100 border-2 border-gray-400"
-                      : index === 2
-                        ? "bg-orange-100 border-2 border-orange-400"
-                        : "bg-gray-50"
-                }`}
-              >
-                <div className="flex items-center space-x-3">
-                  <span
-                    className={`text-2xl font-bold ${
-                      index === 0
-                        ? "text-yellow-500"
-                        : index === 1
-                          ? "text-gray-500"
-                          : index === 2
-                            ? "text-orange-500"
-                            : "text-gray-400"
-                    }`}
-                  >
-                    #{player.rank}
-                  </span>
-                  <span className="font-semibold">{player.playerName}</span>
-                </div>
-                <span className="text-lg font-bold text-gray-700">
-                  {player.score} 分
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center">
-            <button
-              onClick={() => {
-                setGameState("waiting");
-                setCurrentQuestionNumber(1);
-                setCurrentScore(0);
-                setWrongAttempts(0);
-                setAnswerFeedback(null);
-                setIsAnswerCorrect(false);
-                setRankings([]);
-              }}
-              className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-8 py-3 rounded-lg font-semibold hover:from-yellow-600 hover:to-orange-600 transition-all duration-200 transform hover:scale-105"
-            >
-              再玩一次
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  // 遊戲結束畫面（保留原有的，但現在會跳轉到排名）
-  if (gameState === "finished") {
-    // if (AllPlayerFinished)
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-600 to-teal-600 flex items-center justify-center">
-        <div className="bg-white rounded-2xl p-12 text-center shadow-2xl">
-          <h1 className="text-4xl font-bold text-gray-800 mb-6">
-            🎉 遊戲結束！
-          </h1>
-          <p className="text-xl text-gray-600 mb-8">感謝參與這次的答題遊戲</p>
-          <button
-            onClick={async () => {
-              await fetchRankings();
-              setGameState("rankings");
-            }}
-            className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-8 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-teal-600 transition-all duration-200 transform hover:scale-105"
-          >
-            查看排名
-          </button>
-        </div>
-      </div>
-    );
-  }
-  // 主要答題畫面
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-500 to-pink-600 p-4">
-      <div className="max-w-4xl mx-auto">
-        {/* API錯誤提示 */}
-        {apiError && (
-          <div className="mb-4">
-            <ErrorMessage message={apiError} />
-          </div>
-        )}
-
-        {/* 頂部狀態欄 */}
-        <div className="bg-white rounded-xl p-4 mb-6 shadow-lg">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 text-orange-600">
-                <Clock className="w-5 h-5" />
-                <span className="font-bold text-lg">
-                  {formatTime(timeLeft)}
-                </span>
-              </div>
-              <div className="flex items-center space-x-2 text-blue-600">
-                <Users className="w-5 h-5" />
-                <span className="font-semibold">
-                  完成：{completedPlayers}/{totalPlayers}
-                </span>
-              </div>
-              <div className="flex items-center space-x-2 text-purple-600">
-                <Trophy className="w-5 h-5" />
-                <span className="font-semibold">分數：{currentScore}</span>
-              </div>
-              {wrongAttempts > 0 && (
-                <div className="flex items-center space-x-2 text-red-600">
-                  <span className="font-semibold">
-                    錯誤次數：{wrongAttempts}
-                  </span>
-                </div>
-              )}
+      <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 flex items-center justify-center p-6">
+        <Card className="w-full max-w-2xl shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
+          <CardContent className="p-12 text-center space-y-8">
+            <div className="mx-auto w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+              <Loader2 className="w-12 h-12 text-white animate-spin" />
             </div>
-            <div className="text-gray-600 font-semibold">
-              第 {currentQuestionNumber} 題 / {totalQuestions} 題
-            </div>
-          </div>
-
-          {/* 進度條 */}
-          <div className="mt-3">
-            <div className="bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-gradient-to-r from-orange-500 to-pink-500 h-2 rounded-full transition-all duration-1000"
-                style={{ width: `${((35 - timeLeft) / 35) * 100}%` }}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* 主要遊戲區域 */}
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* 圖片顯示區 */}
-          <div className="bg-white rounded-xl p-6 shadow-lg">
-            <div className="text-center mb-4">
-              <h2 className="text-xl font-bold text-gray-800">提示圖片</h2>
-              <p className="text-sm text-gray-600">
-                圖片 {currentImageIndex + 1}/5
+            <div className="space-y-4">
+              <h2 className="text-3xl font-bold text-gray-800">等待其他玩家</h2>
+              <p className="text-xl text-muted-foreground">
+                已完成：{completedPlayers}/{totalPlayers} 位玩家
               </p>
             </div>
-
-            {currentQuestion && (
-              <div className="relative">
-                <img
-                  src={currentQuestion.images[currentImageIndex]}
-                  alt={`提示圖片 ${currentImageIndex + 1}`}
-                  className="w-full h-64 object-cover rounded-lg shadow-md transition-all duration-500"
-                />
-                <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded-md text-sm">
-                  {currentImageIndex + 1}/5
-                </div>
-              </div>
-            )}
-
-            {/* 圖片指示器 */}
-            <div className="flex justify-center mt-4 space-x-2">
-              {currentQuestion?.images.map((_, index) => (
+            <div className="flex justify-center space-x-3">
+              {[...Array(totalPlayers)].map((_, index) => (
                 <div
                   key={index}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentImageIndex
-                      ? "bg-orange-500 scale-125"
+                  className={`w-6 h-6 rounded-full transition-all duration-500 ${
+                    index < completedPlayers
+                      ? "bg-green-500 animate-pulse scale-110"
                       : "bg-gray-300"
                   }`}
                 />
               ))}
             </div>
-          </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
-          {/* 答題區 */}
-          <div className="bg-white rounded-xl p-6 shadow-lg">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">請輸入答案</h2>
-
-            {/* 答題反饋訊息 */}
-            {answerFeedback && (
-              <div
-                className={`mb-4 p-3 rounded-lg ${
-                  isAnswerCorrect
-                    ? "bg-green-100 border border-green-400 text-green-700"
-                    : "bg-red-100 border border-red-400 text-red-700"
-                }`}
-              >
-                <strong>
-                  {isAnswerCorrect ? "Correct!" : "Wrong!"}
-                  {answerFeedback}
-                </strong>
-              </div>
+  // 排名畫面
+  if (gameState === "rankings") {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-yellow-500 via-orange-500 to-red-500 flex items-center justify-center p-6">
+        <Card className="w-full max-w-4xl shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
+          <CardHeader className="text-center space-y-4">
+            <div className="mx-auto w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+              <Trophy className="w-12 h-12 text-white" />
+            </div>
+            <CardTitle className="text-4xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+              🏆 遊戲結果
+            </CardTitle>
+            <p className="text-xl text-muted-foreground">
+              你的總分數: <Badge variant="secondary" className="text-lg px-3 py-1">{currentScore} 分</Badge>
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-8">
+            {apiError && (
+              <Alert variant="destructive">
+                <AlertDescription>{apiError}</AlertDescription>
+              </Alert>
             )}
-
+            
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  你的答案：
-                </label>
-                <input
-                  type="text"
-                  value={userAnswer}
-                  onChange={(e) => setUserAnswer(e.target.value)}
-                  disabled={isSubmitting || isAnswerCorrect}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-lg disabled:bg-gray-100"
-                  placeholder={
-                    isAnswerCorrect
-                      ? "已答對，等待下一題..."
-                      : "請輸入你的答案..."
-                  }
-                  onKeyPress={(e) => {
-                    if (
-                      e.key === "Enter" &&
-                      !isSubmitting &&
-                      !isAnswerCorrect
-                    ) {
-                      handleSubmitAnswer();
-                    }
-                  }}
-                />
-              </div>
+              <h3 className="text-2xl font-bold text-center">排行榜</h3>
+              {rankings.map((player, index) => (
+                <Card 
+                  key={player.playerId}
+                  className={`${
+                    index === 0
+                      ? "bg-gradient-to-r from-yellow-100 to-yellow-200 border-yellow-400 border-2"
+                      : index === 1
+                      ? "bg-gradient-to-r from-gray-100 to-gray-200 border-gray-400 border-2"
+                      : index === 2
+                      ? "bg-gradient-to-r from-orange-100 to-orange-200 border-orange-400 border-2"
+                      : "bg-gray-50"
+                  } shadow-md`}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <Badge 
+                          variant="outline" 
+                          className={`text-2xl font-bold px-4 py-2 ${
+                            index === 0
+                              ? "bg-yellow-500 text-white border-yellow-600"
+                              : index === 1
+                              ? "bg-gray-500 text-white border-gray-600"
+                              : index === 2
+                              ? "bg-orange-500 text-white border-orange-600"
+                              : "bg-gray-400 text-white border-gray-500"
+                          }`}
+                        >
+                          #{player.rank}
+                        </Badge>
+                        <span className="text-xl font-semibold">{player.playerName}</span>
+                      </div>
+                      <Badge variant="secondary" className="text-lg px-4 py-2">
+                        {player.score} 分
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
-              <button
-                onClick={handleSubmitAnswer}
-                disabled={!userAnswer.trim() || isSubmitting || isAnswerCorrect}
-                className="w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white py-3 px-6 rounded-lg font-semibold hover:from-orange-600 hover:to-pink-600 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2"
+            <div className="text-center">
+              <Button
+                onClick={() => {
+                  setGameState("waiting");
+                  setCurrentQuestionNumber(1);
+                  setCurrentScore(0);
+                  setWrongAttempts(0);
+                  setAnswerFeedback(null);
+                  setIsAnswerCorrect(false);
+                  setRankings([]);
+                }}
+                className="h-14 px-8 text-lg font-semibold bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 shadow-lg"
               >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>提交中...</span>
-                  </>
-                ) : isAnswerCorrect ? (
-                  <>
-                    <span>已答對！</span>
-                  </>
-                ) : (
-                  <>
-                    <Send className="w-5 h-5" />
-                    <span>
-                      提交答案
-                      {wrongAttempts > 0
-                        ? ` (第${wrongAttempts + 1}次嘗試)`
-                        : ""}
-                    </span>
-                  </>
+                再玩一次
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // 遊戲結束畫面
+  if (gameState === "finished") {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-600 to-teal-600 flex items-center justify-center p-6">
+        <Card className="w-full max-w-2xl shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
+          <CardContent className="p-12 text-center space-y-8">
+            <h1 className="text-5xl font-bold text-gray-800">🎉 遊戲結束！</h1>
+            <p className="text-xl text-muted-foreground">感謝參與這次的答題遊戲</p>
+            <Button
+              onClick={async () => {
+                await fetchRankings();
+                setGameState("rankings");
+              }}
+              className="h-14 px-8 text-lg font-semibold bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 shadow-lg"
+            >
+              查看排名
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // 主要答題畫面 - 重新設計佈局
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-orange-500 via-pink-500 to-purple-600 p-4">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* API錯誤提示 */}
+        {apiError && (
+          <Alert variant="destructive" className="bg-red-50 border-red-200">
+            <AlertDescription className="text-red-800">{apiError}</AlertDescription>
+          </Alert>
+        )}
+
+        {/* 頂部狀態欄 */}
+        <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+          <CardContent className="p-6">
+            <div className="flex flex-wrap justify-between items-center gap-4 mb-4">
+              <div className="flex flex-wrap items-center gap-6">
+                <div className="flex items-center space-x-2 text-orange-600">
+                  <div className="p-2 bg-orange-100 rounded-full">
+                    <Timer className="w-5 h-5" />
+                  </div>
+                  <span className="font-bold text-xl">{formatTime(timeLeft)}</span>
+                </div>
+                <div className="flex items-center space-x-2 text-blue-600">
+                  <div className="p-2 bg-blue-100 rounded-full">
+                    <Users className="w-5 h-5" />
+                  </div>
+                  <span className="font-semibold">完成：{completedPlayers}/{totalPlayers}</span>
+                </div>
+                <div className="flex items-center space-x-2 text-purple-600">
+                  <div className="p-2 bg-purple-100 rounded-full">
+                    <Star className="w-5 h-5" />
+                  </div>
+                  <span className="font-semibold">分數：{currentScore}</span>
+                </div>
+                {wrongAttempts > 0 && (
+                  <Badge variant="destructive" className="px-3 py-1">
+                    錯誤次數：{wrongAttempts}
+                  </Badge>
                 )}
-              </button>
-
-              <div className="text-center text-sm text-gray-500">
-                {isAnswerCorrect
-                  ? "恭喜答對！等待其他玩家完成..."
-                  : "按 Enter 或點擊按鈕提交答案"}
               </div>
+              <Badge variant="outline" className="text-lg px-4 py-2 font-semibold">
+                第 {currentQuestionNumber} 題 / {totalQuestions} 題
+              </Badge>
+            </div>
 
-              {wrongAttempts > 0 && !isAnswerCorrect && (
-                <div className="text-center text-sm text-red-600">
-                  已嘗試 {wrongAttempts} 次，繼續努力！
+            {/* 進度條 */}
+            <Progress value={((35 - timeLeft) / 35) * 100} className="h-3" />
+          </CardContent>
+        </Card>
+
+        {/* 主要遊戲區域 - 垂直佈局，圖片居中 */}
+        <div className="space-y-6">
+          {/* 提示圖片區 - 置中顯示 */}
+          <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl font-bold text-gray-800">提示圖片</CardTitle>
+              <p className="text-muted-foreground">圖片 {currentImageIndex + 1}/5</p>
+            </CardHeader>
+            <CardContent className="p-8">
+              {currentQuestion && (
+                <div className="flex justify-center">
+                  <div className="relative max-w-4xl w-full">
+                    <img
+                      src={currentQuestion.images[currentImageIndex]}
+                      alt={`提示圖片 ${currentImageIndex + 1}`}
+                      className="w-full h-96 object-cover rounded-xl shadow-lg transition-all duration-500"
+                    />
+                    <Badge 
+                      variant="secondary" 
+                      className="absolute top-4 right-4 bg-black/70 text-white border-0"
+                    >
+                      {currentImageIndex + 1}/5
+                    </Badge>
+                  </div>
                 </div>
               )}
-            </div>
-          </div>
+
+              {/* 圖片指示器 */}
+              <div className="flex justify-center mt-6 space-x-3">
+                {currentQuestion?.images.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`w-4 h-4 rounded-full transition-all duration-300 ${
+                      index === currentImageIndex
+                        ? "bg-orange-500 scale-125 shadow-lg"
+                        : "bg-gray-300"
+                    }`}
+                  />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 答題區 */}
+          <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-center">請輸入答案</CardTitle>
+            </CardHeader>
+            <CardContent className="p-8 space-y-6">
+              {/* 答題反饋訊息 */}
+              {answerFeedback && (
+                <Alert className={isAnswerCorrect ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}>
+                  <AlertDescription className={`font-semibold ${isAnswerCorrect ? "text-green-800" : "text-red-800"}`}>
+                    {isAnswerCorrect ? "✅ 正確！" : "❌ 錯誤！"} {answerFeedback}
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <div className="max-w-2xl mx-auto space-y-6">
+                <div className="space-y-3">
+                  <label className="text-lg font-medium text-gray-700">你的答案：</label>
+                  <Input
+                    type="text"
+                    value={userAnswer}
+                    onChange={(e) => setUserAnswer(e.target.value)}
+                    disabled={isSubmitting || isAnswerCorrect}
+                    className="h-14 text-lg border-2 focus:ring-2 focus:ring-orange-500"
+                    placeholder={
+                      isAnswerCorrect
+                        ? "已答對，等待下一題..."
+                        : "請輸入你的答案..."
+                    }
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter" && !isSubmitting && !isAnswerCorrect) {
+                        handleSubmitAnswer();
+                      }
+                    }}
+                  />
+                </div>
+
+                <Button
+                  onClick={handleSubmitAnswer}
+                  disabled={!userAnswer.trim() || isSubmitting || isAnswerCorrect}
+                  className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 shadow-lg"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                      提交中...
+                    </>
+                  ) : isAnswerCorrect ? (
+                    "已答對！"
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5 mr-2" />
+                      提交答案{wrongAttempts > 0 ? ` (第${wrongAttempts + 1}次嘗試)` : ""}
+                    </>
+                  )}
+                </Button>
+
+                <div className="text-center text-muted-foreground">
+                  {isAnswerCorrect
+                    ? "恭喜答對！等待其他玩家完成..."
+                    : "按 Enter 或點擊按鈕提交答案"}
+                </div>
+
+                {wrongAttempts > 0 && !isAnswerCorrect && (
+                  <div className="text-center">
+                    <Badge variant="destructive">已嘗試 {wrongAttempts} 次，繼續努力！</Badge>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
