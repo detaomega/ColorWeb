@@ -4,14 +4,16 @@ import MainMenu from "./components/MainMenu";
 import CreateRoom from "./components/CreateRoom";
 import JoinRoom from "./components/JoinRoom";
 import GameLobby from "./components/GameLobby";
-import GameScreen from "./components/GameScreen";
-import type { GameState, Player, Room } from "../../types/gameTypes";
+// import GameScreen from "./components/GameScreen";
+import Game from "../GameScreen";
+import type { GameState, Player, Room, GameConfig } from "../../types/gameTypes";
 
 const GamePage: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>("nickname");
   const [nickname, setNickname] = useState<string>("");
   const [currentRoom, setCurrentRoom] = useState<Room | null>(null);
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
+  const [currentGame, setGameConfig] = useState<GameConfig | null>(null);// I need some place to control gameconfig
 
   const handleNicknameSubmit = (inputNickname: string) => {
     setNickname(inputNickname);
@@ -100,12 +102,22 @@ const GamePage: React.FC = () => {
           />
         );
 
+      // case "game":
+      //   return (
+      //     <GameScreen
+      //       room={currentRoom!}
+      //       currentPlayer={currentPlayer!}
+      //       onBack={handleBackToMenu}
+      //     />
+      //   );
+
       case "game":
         return (
-          <GameScreen
+          <Game
             room={currentRoom!}
-            currentPlayer={currentPlayer!}
-            onBack={handleBackToMenu}
+            gameconfig={currentGame!}
+            // onStartGame={handleStartGame}
+            // onBack={handleBackToMenu}
           />
         );
 

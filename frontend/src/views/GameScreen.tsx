@@ -4,35 +4,32 @@ import type {
   Question,
   PlayerRanking,
   AnswerResult,
-} from "../../types/gameTypes";
+  Room,
+  GameConfig
+} from "../types/gameTypes";
+
+interface GameProps {
+  room: Room;
+  gameconfig: GameConfig;
+  // onStartGame: () => void;
+  // onBack: () => void;
+}
 
 // 遊戲狀態
 type PlayerState = "waiting" | "playing" | "loading" | "finished" | "rankings";
 
-// ##############     應實作概念     ##############
-// ############## 遊戲前準備 ##############
-// . TODO(set up) - 承用進入房間時取得的(載房主按下開始遊戲後後端必須將遊戲資料一次性傳給所有前端)遊戲資訊設置房間狀態：
-// 房間id、人數、問題數、問題id陣列、答題時間數、圖片更新速率
-// . TODO(wait before game) - 在玩家進入房間時，設置玩家的狀態為waiting，在玩家按下準備鍵時，回傳資料給後端，並將玩家狀態改為loading
-// ############## 進入遊戲 ##############
-// . TODO(load into game) - 當房主按下開始遊戲，所有loading玩家進入遊戲畫面，在所有人載入完畫面後開始遊戲
-// . TODO(wait in game) - loading時，每秒取得loading人數(或是能否進入下一題的狀態變數)，若loading玩家到達房間人數，
-// 則準備進入下一題，並將玩家狀態改為playing
-// . TODO(game process) - playing時，有倒數計時、完成作答人數(故每秒要向後端更新一次)和題目圖片跟作答欄，作答欄為可
-// 輸入欄位，圖片每隔更新時間更新一次，倒數計時持續更新、完成作答人數每秒更新一次
-// . TODO(failed) - 若玩家答題失敗，紀錄玩家答錯次數及答錯標示，並渲染答錯區塊
-// . TODO(successed) - 當玩家成功答題，將狀態切為loading，並在loading頁面顯示玩家分數和目前作答人數
-// ############## 遊戲結算 ##############
-// . TODO(finish) - 若所有題目及所有成員皆作答完畢，和後端要求排行榜並渲染為排行榜頁面
-
-const QuizGameComponent = () => {
+// const QuizGameComponent = ()
+const QuizGameComponent: React.FC<GameProps> = ({
+  room,
+  gameconfig
+})=> {
   // ##############全域遊戲基本資料##############
   // game data
-  const [gameId] = useState("game-123");
-  const [totalPlayers] = useState(4);
-  const [totalQuestions] = useState(5);
-  const [completedPlayers, setCompletedPlayers] = useState(0);
+  const [gameId] = useState(room.code);
+  const [totalPlayers] = useState(room.players.length);// need to keep update
+  const [totalQuestions] = useState(gameconfig.totalQuestion);
   // question control
+  const [completedPlayers, setCompletedPlayers] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null); //包含該題答案
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   // ##############玩家個人遊戲基本資料##############
@@ -53,7 +50,7 @@ const QuizGameComponent = () => {
   const [wrongAttempts, setWrongAttempts] = useState(0);
 
   // ##############後端API基礎##############
-  // TODO - 後端函式呼叫
+  // 後端函式呼叫
   const apiCall = async (url: string, options?: RequestInit) => {
     try {
       const response = await fetch(url, {
@@ -77,7 +74,7 @@ const QuizGameComponent = () => {
   };
 
   // ##############遊戲過程區塊##############
-  // TODO - 獲取下一題的圖片與答案
+  // 獲取下一題的圖片與答案
   const fetchQuestion = useCallback(async () => {
     try {
       setApiError(null);
@@ -117,7 +114,7 @@ const QuizGameComponent = () => {
       setGameState("playing");
     }
   }, [gameId, currentQuestionNumber]);
-  // TODO - 進入下一題
+  // 進入下一題或結算
   const startNextQuestion = async () => {
     try {
       setApiError(null);
@@ -125,10 +122,10 @@ const QuizGameComponent = () => {
         method: "POST",
       });
 
-      setCurrentQuestionNumber((prev) => prev + 1);
+      setCurrentQuestionNumber((prev) => prev + 1);//x += 1
       await fetchQuestion();
     } catch (error) {
-      console.error("開始下一題失敗:", error);
+      console.error("Api failed:", error);
       // 如果API失敗，仍然繼續到下一題
       if (currentQuestionNumber < totalQuestions) {
         setCurrentQuestionNumber((prev) => prev + 1);
@@ -140,7 +137,7 @@ const QuizGameComponent = () => {
     }
   };
 
-  // TODO - 圖片切換（每7秒換一張）
+  // 圖片切換（每7秒換一張）
   useEffect(() => {
     if (gameState !== "playing" || !currentQuestion) return;
 
@@ -153,14 +150,13 @@ const QuizGameComponent = () => {
     return () => clearInterval(imageTimer);
   }, [gameState, currentQuestion]);
 
-  // TODO - 倒數計時
+  // 倒數計時
   useEffect(() => {
     if (gameState !== "playing" || timeLeft <= 0 || isAnswerCorrect) return;
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          // 時間到，自動進入下一題或結束遊戲
           handleTimeUp();
           return 0;
         }
@@ -171,7 +167,7 @@ const QuizGameComponent = () => {
     return () => clearInterval(timer);
   }, [gameState, timeLeft, isAnswerCorrect]);
 
-  // TODO - 時間到處理
+  // 時間到處理(時間到，自動進入下一題或結束遊戲)
   const handleTimeUp = useCallback(async () => {
     if (gameState !== "playing") return;
 
@@ -190,12 +186,12 @@ const QuizGameComponent = () => {
     }, 2000);
   }, [gameState, currentQuestionNumber, totalQuestions]);
 
-  // TODO - 格式化時間顯示
+  // 格式化時間顯示
   const formatTime = (seconds: number) => {
     return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, "0")}`;
   };
 
-  // TODO - 提交答案
+  // 提交答案
   const handleSubmitAnswer = useCallback(async () => {
     if (
       gameState !== "playing" ||
@@ -257,7 +253,7 @@ const QuizGameComponent = () => {
     wrongAttempts,
   ]);
 
-  // TODO - 提交答案並獲取分數
+  // 提交答案並獲取分數
   const submitAnswerAndGetScore = async (answer: string) => {
     try {
       setApiError(null);
@@ -276,8 +272,7 @@ const QuizGameComponent = () => {
     } catch (error) {
       console.error("提交答案失敗:", error);
       // 如果API失敗，返回模擬結果
-      const isCorrect =
-        answer.toLowerCase().includes("範例") || Math.random() > 0.7; // 模擬正確率
+      const isCorrect = answer.toLowerCase().includes("範例"); // 模擬正確率
       const score = isCorrect ? Math.floor(Math.random() * 100) + 50 : 0;
       return {
         correct: isCorrect,
@@ -288,15 +283,15 @@ const QuizGameComponent = () => {
     }
   };
 
-  // TODO - 錯誤顯示組件
+  // 錯誤顯示組件
   const ErrorMessage = ({ message }: { message: string }) => (
     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-      <strong>錯誤：</strong> {message}
+      <strong>Error</strong> {message}
     </div>
   );
 
   // ##############遊戲畫面##############
-  // TODO - 開始新遊戲
+  // 開始新遊戲
   const startGame = () => {
     setCurrentQuestionNumber(1);
     setCurrentScore(0);
@@ -306,7 +301,7 @@ const QuizGameComponent = () => {
     setApiError(null);
     fetchQuestion();
   };
-  // TODO - 載入排名頁面
+  // 載入排名頁面
   const fetchRankings = async () => {
     try {
       setApiError(null);
@@ -317,14 +312,14 @@ const QuizGameComponent = () => {
       // 如果API失敗，使用模擬排名數據
       const mockRankings: PlayerRanking[] = [
         { playerId: "1", playerName: "玩家1", score: currentScore, rank: 1 },
-        { playerId: "2", playerName: "玩家2", score: 450, rank: 2 },
-        { playerId: "3", playerName: "玩家3", score: 380, rank: 3 },
-        { playerId: "4", playerName: "玩家4", score: 320, rank: 4 },
+        { playerId: "2", playerName: "玩家2", score: 0, rank: 2 },
+        { playerId: "3", playerName: "玩家3", score: 0, rank: 3 },
+        { playerId: "4", playerName: "玩家4", score: 0, rank: 4 },
       ];
       setRankings(mockRankings);
     }
   };
-  // TODO - 等待畫面
+  // 等待畫面(應連接其他頁面)
   if (gameState === "waiting") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
@@ -347,7 +342,7 @@ const QuizGameComponent = () => {
       </div>
     );
   }
-  // TODO - 載入等待畫面
+  // 載入等待畫面
   if (gameState === "loading") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
@@ -377,7 +372,7 @@ const QuizGameComponent = () => {
       </div>
     );
   }
-  // TODO - 排名畫面
+  // 排名畫面(應接去其他人的遊玩畫面，下為mock version)
   if (gameState === "rankings") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-yellow-500 to-orange-600 flex items-center justify-center p-4">
@@ -394,7 +389,7 @@ const QuizGameComponent = () => {
 
           <div className="space-y-4 mb-8">
             <h2 className="text-xl font-bold text-gray-800 text-center">
-              排行榜
+              Ranking
             </h2>
             {rankings.map((player, index) => (
               <div
@@ -452,7 +447,7 @@ const QuizGameComponent = () => {
       </div>
     );
   }
-  // TODO - 遊戲結束畫面（保留原有的，但現在會跳轉到排名）
+  // 遊戲結束畫面（保留原有的，但現在會跳轉到排名）
   if (gameState === "finished") {
     // if (AllPlayerFinished)
     return (
@@ -475,7 +470,7 @@ const QuizGameComponent = () => {
       </div>
     );
   }
-  // TODO - 主要答題畫面
+  // 主要答題畫面
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-500 to-pink-600 p-4">
       <div className="max-w-4xl mx-auto">
@@ -583,7 +578,7 @@ const QuizGameComponent = () => {
                 }`}
               >
                 <strong>
-                  {isAnswerCorrect ? "✅ " : "❌ "}
+                  {isAnswerCorrect ? "Correct!" : "Wrong!"}
                   {answerFeedback}
                 </strong>
               </div>
@@ -629,7 +624,7 @@ const QuizGameComponent = () => {
                   </>
                 ) : isAnswerCorrect ? (
                   <>
-                    <span>✅ 已答對！</span>
+                    <span>已答對！</span>
                   </>
                 ) : (
                   <>
@@ -664,3 +659,20 @@ const QuizGameComponent = () => {
 };
 
 export default QuizGameComponent;
+
+
+// ##############     應實作概念     ##############
+// ############## 遊戲前準備 ##############
+// . TODO(set up) - 承用進入房間時取得的(載房主按下開始遊戲後後端必須將遊戲資料一次性傳給所有前端)遊戲資訊設置房間狀態：
+// 房間id、人數、問題數、問題id陣列、答題時間數、圖片更新速率
+// . TODO(wait before game) - 在玩家進入房間時，設置玩家的狀態為waiting，在玩家按下準備鍵時，回傳資料給後端，並將玩家狀態改為loading
+// ############## 進入遊戲 ##############
+// . TODO(load into game) - 當房主按下開始遊戲，所有loading玩家進入遊戲畫面，在所有人載入完畫面後開始遊戲
+// . TODO(wait in game) - loading時，每秒取得loading人數(或是能否進入下一題的狀態變數)，若loading玩家到達房間人數，
+// 則準備進入下一題，並將玩家狀態改為playing
+// . TODO(game process) - playing時，有倒數計時、完成作答人數(故每秒要向後端更新一次)和題目圖片跟作答欄，作答欄為可
+// 輸入欄位，圖片每隔更新時間更新一次，倒數計時持續更新、完成作答人數每秒更新一次
+// . TODO(failed) - 若玩家答題失敗，紀錄玩家答錯次數及答錯標示，並渲染答錯區塊
+// . TODO(successed) - 當玩家成功答題，將狀態切為loading，並在loading頁面顯示玩家分數和目前作答人數
+// ############## 遊戲結算 ##############
+// . TODO(finish) - 若所有題目及所有成員皆作答完畢，和後端要求排行榜並渲染為排行榜頁面

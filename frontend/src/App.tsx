@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import GamePage from "@/views/GamePage/GameSystem";
+import GamePage from "@/views/GameScreen";
 const App: React.FC = () => {
   return (
     <Routes>

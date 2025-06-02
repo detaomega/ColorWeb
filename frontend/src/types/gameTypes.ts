@@ -28,6 +28,7 @@ export interface GameConfig {
   minPlayers: number;
   maxPlayers: number;
   roomCodeLength: number;
+  totalQuestion: number;//should I do this?
 }
 
 // 題目數據結構
