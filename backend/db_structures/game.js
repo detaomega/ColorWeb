@@ -18,6 +18,44 @@ const playerSchema = new mongoose.Schema({
   }
 });
 
+// 遊戲中的問題 Schema（取代原本的 GameQuestion）
+const gameQuestionSchema = new mongoose.Schema({
+  // 動漫名稱
+  animeTitle: {
+    type: String,
+    required: true
+  },
+  // 使用的圖片資料夾路徑
+  imagePath: {
+    type: String,
+    required: true
+  },
+  // 問題在遊戲中的順序（從1開始）
+  order: {
+    type: Number,
+    required: true
+  },
+  // 問題狀態
+  status: {
+    type: String,
+    enum: ['pending', 'active', 'completed'],
+    default: 'pending'
+  },
+  // 🆕 新增答案欄位 - 這是關鍵！
+  answer: {
+    type: String,
+    required: true
+  },
+  // 問題變為活動狀態的時間戳
+  activatedAt: {
+    type: Date
+  },
+  // 問題完成的時間戳
+  completedAt: {
+    type: Date
+  }
+});
+
 // 遊戲 Schema
 const gameSchema = new mongoose.Schema({
   gameId: {
@@ -64,6 +102,8 @@ const gameSchema = new mongoose.Schema({
   },
   // 內嵌玩家列表
   players: [playerSchema],
+  // 遊戲中的問題列表
+  questions: [gameQuestionSchema],
   createdAt: {
     type: Date,
     default: Date.now
@@ -88,6 +128,16 @@ gameSchema.methods.getRankedPlayers = function() {
 // 查找玩家的方法
 gameSchema.methods.findPlayerByUsername = function(username) {
   return this.players.find(player => player.username === username);
+};
+
+// 獲取當前問題的方法
+gameSchema.methods.getCurrentQuestion = function() {
+  return this.questions.find(q => q.order === this.currentQuestionNumber);
+};
+
+// 獲取指定順序問題的方法
+gameSchema.methods.getQuestionByOrder = function(order) {
+  return this.questions.find(q => q.order === order);
 };
 
 module.exports = mongoose.model('Game', gameSchema);
