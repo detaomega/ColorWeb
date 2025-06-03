@@ -41,6 +41,11 @@ const gameQuestionSchema = new mongoose.Schema({
     enum: ['pending', 'active', 'completed'],
     default: 'pending'
   },
+  // 🆕 新增答案欄位 - 這是關鍵！
+  answer: {
+    type: String,
+    required: true
+  },
   // 問題變為活動狀態的時間戳
   activatedAt: {
     type: Date

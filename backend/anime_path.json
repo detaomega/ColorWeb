@@ -1,114 +1,114 @@
 {
     "Assassination Classroom": {
       "images": [
-        "/dataset_resized/Assassination Classroom\\Assassination Classroom_1"
+        "./create_data/dataset_resized/Assassination Classroom/Assassination Classroom_1"
       ]
     },
     "Chainsaw Man": {
       "images": [
-        "/dataset_resized/Chainsaw Man\\Chainsaw Man_1",
-        "/dataset_resized/Chainsaw Man\\Chainsaw Man_2",
-        "/dataset_resized/Chainsaw Man\\Chainsaw Man_3",
-        "/dataset_resized/Chainsaw Man\\Chainsaw Man_4"
+        "./create_data/dataset_resized/Chainsaw Man/Chainsaw Man_1",
+        "./create_data/dataset_resized/Chainsaw Man/Chainsaw Man_2",
+        "./create_data/dataset_resized/Chainsaw Man/Chainsaw Man_3",
+        "./create_data/dataset_resized/Chainsaw Man/Chainsaw Man_4"
       ]
     },
     "Charlotte": {
       "images": [
-        "/dataset_resized/Charlotte\\Charlotte_1",
-        "/dataset_resized/Charlotte\\Charlotte_2"
+        "./create_data/dataset_resized/Charlotte/Charlotte_1",
+        "./create_data/dataset_resized/Charlotte/Charlotte_2"
       ]
     },
     "Death Note": {
       "images": [
-        "/dataset_resized/death note\\death note_1",
-        "/dataset_resized/death note\\death note_2",
-        "/dataset_resized/death note\\death note_3"
+        "./create_data/dataset_resized/death note/death note_1",
+        "./create_data/dataset_resized/death note/death note_2",
+        "./create_data/dataset_resized/death note/death note_3"
       ]
     },
     "Fairy Tail": {
       "images": [
-        "/dataset_resized/Fairy tail\\Fairy tail_1",
-        "/dataset_resized/Fairy tail\\Fairy tail_2"
+        "./create_data/dataset_resized/Fairy tail/Fairy tail_1",
+        "./create_data/dataset_resized/Fairy tail/Fairy tail_2"
       ]
     },
     "Frieren": {
       "images": [
-        "/dataset_resized/Frieren\\Frieren_1",
-        "/dataset_resized/Frieren\\Frieren_2",
-        "/dataset_resized/Frieren\\Frieren_3",
-        "/dataset_resized/Frieren\\Frieren_4"
+        "./create_data/dataset_resized/Frieren/Frieren_1",
+        "./create_data/dataset_resized/Frieren/Frieren_2",
+        "./create_data/dataset_resized/Frieren/Frieren_3",
+        "./create_data/dataset_resized/Frieren/Frieren_4"
       ]
     },
     "Fullmetal Alchemist": {
       "images": [
-        "/dataset_resized/FullmetalAlchemist\\FullmetalAlchemist_1",
-        "/dataset_resized/FullmetalAlchemist\\FullmetalAlchemist_2",
-        "/dataset_resized/FullmetalAlchemist\\FullmetalAlchemist_3",
-        "/dataset_resized/FullmetalAlchemist\\FullmetalAlchemist_4"
+        "./create_data/dataset_resized/FullmetalAlchemist/FullmetalAlchemist_1",
+        "./create_data/dataset_resized/FullmetalAlchemist/FullmetalAlchemist_2",
+        "./create_data/dataset_resized/FullmetalAlchemist/FullmetalAlchemist_3",
+        "./create_data/dataset_resized/FullmetalAlchemist/FullmetalAlchemist_4"
       ]
     },
     "Gintama": {
       "images": [
-        "/dataset_resized/Gin Tama\\Gin Tama_1",
-        "/dataset_resized/Gin Tama\\Gin Tama_2"
+        "./create_data/dataset_resized/Gin Tama/Gin Tama_1",
+        "./create_data/dataset_resized/Gin Tama/Gin Tama_2"
       ]
     },
     "Hunter x Hunter": {
       "images": [
-        "/dataset_resized/hunter\\hunter_1",
-        "/dataset_resized/hunter\\hunter_2",
-        "/dataset_resized/hunter\\hunter_3"
+        "./create_data/dataset_resized/hunter/hunter_1",
+        "./create_data/dataset_resized/hunter/hunter_2",
+        "./create_data/dataset_resized/hunter/hunter_3"
       ]
     },
     "Inazuma Eleven": {
       "images": [
-        "/dataset_resized/Inazuma Eleven\\Inazuma Eleven_1",
-        "/dataset_resized/Inazuma Eleven\\Inazuma Eleven_2",
-        "/dataset_resized/Inazuma Eleven\\Inazuma Eleven_3"
+        "./create_data/dataset_resized/Inazuma Eleven/Inazuma Eleven_1",
+        "./create_data/dataset_resized/Inazuma Eleven/Inazuma Eleven_2",
+        "./create_data/dataset_resized/Inazuma Eleven/Inazuma Eleven_3"
       ]
     },
     "Yakitate!! Japan": {
       "images": [
-        "/dataset_resized/Ja-pan\\Ja-pan_1",
-        "/dataset_resized/Ja-pan\\Ja-pan_2",
-        "/dataset_resized/Ja-pan\\Ja-pan_3",
-        "/dataset_resized/Ja-pan\\Ja-pan_4",
-        "/dataset_resized/Ja-pan\\Ja-pan_5"
+        "./create_data/dataset_resized/Ja-pan/Ja-pan_1",
+        "./create_data/dataset_resized/Ja-pan/Ja-pan_2",
+        "./create_data/dataset_resized/Ja-pan/Ja-pan_3",
+        "./create_data/dataset_resized/Ja-pan/Ja-pan_4",
+        "./create_data/dataset_resized/Ja-pan/Ja-pan_5"
       ]
     },
     "No Game No Life": {
       "images": [
-        "/dataset_resized/no game no life\\no game no life_1",
-        "/dataset_resized/no game no life\\no game no life_2"
+        "./create_data/dataset_resized/no game no life/no game no life_1",
+        "./create_data/dataset_resized/no game no life/no game no life_2"
       ]
     },
     "One Punch Man": {
       "images": [
-        "/dataset_resized/one punch\\one punch_1",
-        "/dataset_resized/one punch\\one punch_2",
-        "/dataset_resized/one punch\\one punch_3",
-        "/dataset_resized/one punch\\one punch_4"
+        "./create_data/dataset_resized/one punch/one punch_1",
+        "./create_data/dataset_resized/one punch/one punch_2",
+        "./create_data/dataset_resized/one punch/one punch_3",
+        "./create_data/dataset_resized/one punch/one punch_4"
       ]
     },
     "Re:Zero": {
       "images": [
-        "/dataset_resized/re\\re_1",
-        "/dataset_resized/re\\re_2",
-        "/dataset_resized/re\\re_3",
-        "/dataset_resized/re\\re_4"
+        "./create_data/dataset_resized/re/re_1",
+        "./create_data/dataset_resized/re/re_2",
+        "./create_data/dataset_resized/re/re_3",
+        "./create_data/dataset_resized/re/re_4"
       ]
     },
     "Solo Leveling": {
       "images": [
-        "/dataset_resized/solo leveling\\solo leveling_1",
-        "/dataset_resized/solo leveling\\solo leveling_2",
-        "/dataset_resized/solo leveling\\solo leveling_3",
-        "/dataset_resized/solo leveling\\solo leveling_4"
+        "./create_data/dataset_resized/solo leveling/solo leveling_1",
+        "./create_data/dataset_resized/solo leveling/solo leveling_2",
+        "./create_data/dataset_resized/solo leveling/solo leveling_3",
+        "./create_data/dataset_resized/solo leveling/solo leveling_4"
       ]
     },
     "Tokyo Ghoul": {
       "images": [
-        "/dataset_resized/Tokyo Ghoul\\Tokyo Ghoul_1"
+        "./create_data/dataset_resized/Tokyo Ghoul/Tokyo Ghoul_1"
       ]
     }
 }

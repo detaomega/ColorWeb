@@ -71,8 +71,59 @@ function selectRandomQuestions(animeData, count = 10) {
       status: 'pending'
     };
   });
-  
-  return questions;
+  const deadQuestions = [
+      {
+        "animeTitle": "Chainsaw Man",
+        "imagePath": "./create_data/dataset_resized/Chainsaw Man/Chainsaw Man_1",
+        "order": 1,
+        "answer": "鍊鋸人",
+        "status": "pending",
+      },
+      {
+        "animeTitle": "Charlotte",
+        "imagePath": "./create_data/dataset_resized/Charlotte/Charlotte_1",
+        "order": 2,
+        "answer": "夏洛特",
+        "status": "pending",
+      },
+      {
+        "animeTitle": "No Game No Life",
+        "imagePath": "./create_data/dataset_resized/no game no life/no game no life_2",
+        "order": 3,
+        "answer": "遊戲人生",
+        "status": "pending",
+      },
+      {
+        "animeTitle": "Frieren",
+        "imagePath": "./create_data/dataset_resized/Frieren/Frieren_4",
+        "order": 4,
+        "answer": "葬送的芙莉蓮",
+        "status": "pending",
+      },
+      {
+        "animeTitle": "Tokyo Ghoul",
+        "imagePath": "./create_data/dataset_resized/Tokyo Ghoul/Tokyo Ghoul_1",
+        "order": 5,
+        "answer": "東京喰種",
+        "status": "pending",
+      },
+      {
+        "animeTitle": "Fairy Tail",
+        "imagePath": "./create_data/dataset_resized/Fairy tail/Fairy tail_2",
+        "order": 6,
+        "answer": "妖精的尾巴",
+        "status": "pending",
+      },
+      {
+        "animeTitle": "One Punch Man",
+        "imagePath": "./create_data/dataset_resized/one punch/one punch_1",
+        "order": 7,
+        "answer": "一拳超人",
+        "status": "pending",
+      }
+    ];
+
+  return deadQuestions;
 }
 
 // 讀取答案檔案的函數
@@ -80,9 +131,11 @@ function readAnswerFile(imagePath) {
   try {
     // 將相對路徑轉換為絕對路徑
     const absoluteImagePath = path.resolve(imagePath);
+    console.log('🔍 解析圖片路徑:', absoluteImagePath);
     
     // 取得圖片資料夾的父目錄（動漫資料夾）
     const animeDirectory = path.dirname(absoluteImagePath);
+    console.log('🔍 尋找答案檔案的動漫資料夾:', animeDirectory);
     
     // 構建 answer.txt 的路徑
     const answerFilePath = path.join(animeDirectory, 'answer.txt');
