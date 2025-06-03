@@ -1,6 +1,8 @@
 import type { GameCreate } from "@/types/gameTypes";
 import type { GameInfo, CreateGameResponse } from "@/types/gameTypes";
-export const createGame = async (newGame: GameCreate): Promise<CreateGameResponse> => {
+export const createGame = async (
+  newGame: GameCreate,
+): Promise<CreateGameResponse> => {
   const response = await fetch(`/api/games`, {
     method: "POST",
     headers: {

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { createGame } from "@/services/gameService";
-import { addNewPlayers  } from "@/services/playerService"; // Add host player to gameID
+import { addNewPlayers } from "@/services/playerService"; // Add host player to gameID
 
 // import { createRoom } from "../api/CreateRoomApi";
 
@@ -32,12 +32,11 @@ const CreateRoom: React.FC<CreateRoomProps> = ({
         revealInterval: 5,
         answerTime: 20,
         maxPointsPerQuestion: 100,
-        rounds: 7
+        rounds: 7,
       },
-      hostId: player.username
+      hostId: player.username,
     });
-    
-    
+
     const roomCode = result.game.gameId;
     const _id = result.game._id;
     const hostPlayer = { ...player, isHost: true };
@@ -52,7 +51,7 @@ const CreateRoom: React.FC<CreateRoomProps> = ({
       isGameStarted: false,
       createdAt: new Date(),
     };
-    await addNewPlayers(roomCode, player.username)
+    await addNewPlayers(roomCode, player.username);
     setIsCreating(false);
     onRoomCreated(newRoom);
   };

@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Users, Gamepad2 } from 'lucide-react';
-import { type Room, type Player } from "@/types/gameTypes"
-import { addNewPlayers } from '@/services/playerService';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Users, Gamepad2 } from "lucide-react";
+import { type Room, type Player } from "@/types/gameTypes";
+import { addNewPlayers } from "@/services/playerService";
 // Mock types (replace with your actual types)
 
 interface JoinRoomProps {
@@ -64,7 +64,6 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
 
     // 模擬加入房間的延遲
 
-  
     // 查找房間（在實際應用中，這會是 API 調用）
     const response = await addNewPlayers(roomCode, player.username);
     if (response.success == "false" && response.message == "找不到遊戲") {
@@ -73,8 +72,10 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
       return;
     }
 
-
-    if (response.success == "false" && response.message == "遊戲已經開始或已結束，無法加入新玩家") {
+    if (
+      response.success == "false" &&
+      response.message == "遊戲已經開始或已結束，無法加入新玩家"
+    ) {
       setError("遊戲已開始，無法加入");
       setIsJoining(false);
       return;
@@ -86,15 +87,12 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
       return;
     }
 
-      
-
-
     // 加入房間
     const updatedRoom = {
-    code: roomCode,
-    players: [],
-    hostname: "test"
-  };
+      code: roomCode,
+      players: [],
+      hostname: "test",
+    };
 
     setIsJoining(false);
     onRoomJoined(updatedRoom);
@@ -131,13 +129,18 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
                 </Badge>
               </div>
               <CardTitle className="text-4xl font-bold">🚪 加入房間</CardTitle>
-              <p className="text-xl text-muted-foreground">輸入房間代碼來加入遊戲</p>
+              <p className="text-xl text-muted-foreground">
+                輸入房間代碼來加入遊戲
+              </p>
             </CardHeader>
 
             {/* Form */}
             <CardContent className="px-8 pb-8 space-y-6">
               <div className="space-y-4">
-                <Label htmlFor="roomCode" className="text-xl font-semibold flex items-center gap-2">
+                <Label
+                  htmlFor="roomCode"
+                  className="text-xl font-semibold flex items-center gap-2"
+                >
                   <Gamepad2 className="w-5 h-5 text-primary" />
                   房間代碼
                 </Label>
@@ -158,7 +161,9 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
                 />
                 {error && (
                   <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                    <p className="text-red-600 text-center font-medium">{error}</p>
+                    <p className="text-red-600 text-center font-medium">
+                      {error}
+                    </p>
                   </div>
                 )}
               </div>
@@ -207,7 +212,10 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
                         <div className="flex items-center gap-3">
-                          <Badge variant="outline" className="font-mono text-lg px-3 py-1">
+                          <Badge
+                            variant="outline"
+                            className="font-mono text-lg px-3 py-1"
+                          >
                             {room.code}
                           </Badge>
                           <Badge variant="secondary" className="text-sm">
@@ -215,7 +223,10 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
                           </Badge>
                         </div>
                         <p className="text-muted-foreground">
-                          房主: <span className="font-semibold">{room.host?.username ?? "" }</span>
+                          房主:{" "}
+                          <span className="font-semibold">
+                            {room.host?.username ?? ""}
+                          </span>
                         </p>
                       </div>
                       <Button

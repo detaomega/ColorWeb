@@ -6,7 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import WaitingScreenUI from "@/views/GameScreen/components/WaitingScreen"
+import WaitingScreenUI from "@/views/GameScreen/components/WaitingScreen";
+import CountdownScreen from "@/views/GameScreen/components/CountDownScreen";
+
 type Question = {
   id: string;
   images: string[];
@@ -37,7 +39,7 @@ const QuizGameComponent = () => {
   const [completedPlayers, setCompletedPlayers] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  
+
   // ##############玩家個人遊戲基本資料##############
   const [gameState, setGameState] = useState<PlayerState>("waiting");
   const [timeLeft, setTimeLeft] = useState(35);
@@ -95,7 +97,7 @@ const QuizGameComponent = () => {
         id: `question-${currentQuestionNumber}`,
         images: [
           "https://picsum.photos/600/400?random=1",
-          "https://picsum.photos/600/400?random=2", 
+          "https://picsum.photos/600/400?random=2",
           "https://picsum.photos/600/400?random=3",
           "https://picsum.photos/600/400?random=4",
           "https://picsum.photos/600/400?random=5",
@@ -298,44 +300,12 @@ const QuizGameComponent = () => {
 
   // 等待畫面
   if (gameState === "waiting") {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-blue-600 flex items-center justify-center p-6">
-        <Card className="w-full max-w-lg shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
-          <CardHeader className="text-center space-y-4">
-            <div className="mx-auto w-20 h-20 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full flex items-center justify-center">
-              <Trophy className="w-10 h-10 text-white" />
-            </div>
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
-              準備開始遊戲
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {apiError && (
-              <Alert variant="destructive" className="border-red-200">
-                <AlertDescription>{apiError}</AlertDescription>
-              </Alert>
-            )}
-            <div className="text-center space-y-2 text-muted-foreground">
-              <p>遊戲ID: <Badge variant="secondary">{gameId}</Badge></p>
-              <p>當前分數: <Badge variant="outline">{currentScore}</Badge></p>
-            </div>
-            <Button 
-              onClick={startGame} 
-              className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 shadow-lg"
-            >
-              開始遊戲
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <CountdownScreen startGame={startGame} />;
   }
 
   // 載入等待畫面
   if (gameState === "loading") {
-    return (
-      <WaitingScreenUI />
-      );
+    return <WaitingScreenUI />;
   }
 
   // 排名畫面
@@ -351,7 +321,10 @@ const QuizGameComponent = () => {
               🏆 遊戲結果
             </CardTitle>
             <p className="text-xl text-muted-foreground">
-              你的總分數: <Badge variant="secondary" className="text-lg px-3 py-1">{currentScore} 分</Badge>
+              你的總分數:{" "}
+              <Badge variant="secondary" className="text-lg px-3 py-1">
+                {currentScore} 分
+              </Badge>
             </p>
           </CardHeader>
           <CardContent className="space-y-8">
@@ -360,40 +333,42 @@ const QuizGameComponent = () => {
                 <AlertDescription>{apiError}</AlertDescription>
               </Alert>
             )}
-            
+
             <div className="space-y-4">
               <h3 className="text-2xl font-bold text-center">排行榜</h3>
               {rankings.map((player, index) => (
-                <Card 
+                <Card
                   key={player.playerId}
                   className={`${
                     index === 0
                       ? "bg-gradient-to-r from-yellow-100 to-yellow-200 border-yellow-400 border-2"
                       : index === 1
-                      ? "bg-gradient-to-r from-gray-100 to-gray-200 border-gray-400 border-2"
-                      : index === 2
-                      ? "bg-gradient-to-r from-orange-100 to-orange-200 border-orange-400 border-2"
-                      : "bg-gray-50"
+                        ? "bg-gradient-to-r from-gray-100 to-gray-200 border-gray-400 border-2"
+                        : index === 2
+                          ? "bg-gradient-to-r from-orange-100 to-orange-200 border-orange-400 border-2"
+                          : "bg-gray-50"
                   } shadow-md`}
                 >
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
-                        <Badge 
-                          variant="outline" 
+                        <Badge
+                          variant="outline"
                           className={`text-2xl font-bold px-4 py-2 ${
                             index === 0
                               ? "bg-yellow-500 text-white border-yellow-600"
                               : index === 1
-                              ? "bg-gray-500 text-white border-gray-600"
-                              : index === 2
-                              ? "bg-orange-500 text-white border-orange-600"
-                              : "bg-gray-400 text-white border-gray-500"
+                                ? "bg-gray-500 text-white border-gray-600"
+                                : index === 2
+                                  ? "bg-orange-500 text-white border-orange-600"
+                                  : "bg-gray-400 text-white border-gray-500"
                           }`}
                         >
                           #{player.rank}
                         </Badge>
-                        <span className="text-xl font-semibold">{player.playerName}</span>
+                        <span className="text-xl font-semibold">
+                          {player.playerName}
+                        </span>
                       </div>
                       <Badge variant="secondary" className="text-lg px-4 py-2">
                         {player.score} 分
@@ -433,7 +408,9 @@ const QuizGameComponent = () => {
         <Card className="w-full max-w-2xl shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
           <CardContent className="p-12 text-center space-y-8">
             <h1 className="text-5xl font-bold text-gray-800">🎉 遊戲結束！</h1>
-            <p className="text-xl text-muted-foreground">感謝參與這次的答題遊戲</p>
+            <p className="text-xl text-muted-foreground">
+              感謝參與這次的答題遊戲
+            </p>
             <Button
               onClick={async () => {
                 await fetchRankings();
@@ -469,19 +446,25 @@ const QuizGameComponent = () => {
                   <div className="p-3 bg-slate-100 rounded-full">
                     <Timer className="w-6 h-6 text-slate-600" />
                   </div>
-                  <span className="font-bold text-2xl">{formatTime(timeLeft)}</span>
+                  <span className="font-bold text-2xl">
+                    {formatTime(timeLeft)}
+                  </span>
                 </div>
                 <div className="flex items-center space-x-3 text-slate-700">
                   <div className="p-3 bg-slate-100 rounded-full">
                     <Users className="w-6 h-6 text-slate-600" />
                   </div>
-                  <span className="font-semibold text-lg">完成：{completedPlayers}/{totalPlayers}</span>
+                  <span className="font-semibold text-lg">
+                    完成：{completedPlayers}/{totalPlayers}
+                  </span>
                 </div>
                 <div className="flex items-center space-x-3 text-slate-700">
                   <div className="p-3 bg-slate-100 rounded-full">
                     <Star className="w-6 h-6 text-slate-600" />
                   </div>
-                  <span className="font-semibold text-lg">分數：{currentScore}</span>
+                  <span className="font-semibold text-lg">
+                    分數：{currentScore}
+                  </span>
                 </div>
                 {wrongAttempts > 0 && (
                   <Badge variant="destructive" className="px-4 py-2 text-sm">
@@ -489,13 +472,19 @@ const QuizGameComponent = () => {
                   </Badge>
                 )}
               </div>
-              <Badge variant="outline" className="text-xl px-6 py-3 font-semibold border-slate-300">
+              <Badge
+                variant="outline"
+                className="text-xl px-6 py-3 font-semibold border-slate-300"
+              >
                 第 {currentQuestionNumber} 題 / {totalQuestions} 題
               </Badge>
             </div>
 
             {/* 進度條 */}
-            <Progress value={((35 - timeLeft) / 35) * 100} className="h-4 bg-slate-200" />
+            <Progress
+              value={((35 - timeLeft) / 35) * 100}
+              className="h-4 bg-slate-200"
+            />
           </CardContent>
         </Card>
 
@@ -504,8 +493,12 @@ const QuizGameComponent = () => {
           {/* 提示圖片區 */}
           <Card className="shadow-lg border border-slate-200 bg-white">
             <CardHeader className="text-center pb-4">
-              <CardTitle className="text-3xl font-bold text-slate-800">提示圖片</CardTitle>
-              <p className="text-slate-500 text-lg">圖片 {currentImageIndex + 1}/5</p>
+              <CardTitle className="text-3xl font-bold text-slate-800">
+                提示圖片
+              </CardTitle>
+              <p className="text-slate-500 text-lg">
+                圖片 {currentImageIndex + 1}/5
+              </p>
             </CardHeader>
             <CardContent className="p-8">
               {currentQuestion && (
@@ -516,8 +509,8 @@ const QuizGameComponent = () => {
                       alt={`提示圖片 ${currentImageIndex + 1}`}
                       className="w-full h-80 object-cover rounded-xl shadow-md transition-all duration-500"
                     />
-                    <Badge 
-                      variant="secondary" 
+                    <Badge
+                      variant="secondary"
                       className="absolute top-4 right-4 bg-black/70 text-white border-0 text-sm px-3 py-1"
                     >
                       {currentImageIndex + 1}/5
@@ -545,21 +538,34 @@ const QuizGameComponent = () => {
           {/* 答題區 */}
           <Card className="shadow-lg border border-slate-200 bg-white">
             <CardHeader className="text-center pb-4">
-              <CardTitle className="text-3xl font-bold text-slate-800">請輸入答案</CardTitle>
+              <CardTitle className="text-3xl font-bold text-slate-800">
+                請輸入答案
+              </CardTitle>
             </CardHeader>
             <CardContent className="p-8 space-y-8">
               {/* 答題反饋訊息 */}
               {answerFeedback && (
-                <Alert className={isAnswerCorrect ? "border-green-200 bg-green-50" : "border-amber-200 bg-amber-50"}>
-                  <AlertDescription className={`font-semibold text-base ${isAnswerCorrect ? "text-green-700" : "text-amber-700"}`}>
-                    {isAnswerCorrect ? "✅ 正確！" : "💡 提示："} {answerFeedback}
+                <Alert
+                  className={
+                    isAnswerCorrect
+                      ? "border-green-200 bg-green-50"
+                      : "border-amber-200 bg-amber-50"
+                  }
+                >
+                  <AlertDescription
+                    className={`font-semibold text-base ${isAnswerCorrect ? "text-green-700" : "text-amber-700"}`}
+                  >
+                    {isAnswerCorrect ? "✅ 正確！" : "💡 提示："}{" "}
+                    {answerFeedback}
                   </AlertDescription>
                 </Alert>
               )}
 
               <div className="space-y-6">
                 <div className="space-y-4">
-                  <label className="text-xl font-medium text-slate-700 block">你的答案：</label>
+                  <label className="text-xl font-medium text-slate-700 block">
+                    你的答案：
+                  </label>
                   <Input
                     type="text"
                     value={userAnswer}
@@ -572,7 +578,11 @@ const QuizGameComponent = () => {
                         : "請輸入你的答案..."
                     }
                     onKeyPress={(e) => {
-                      if (e.key === "Enter" && !isSubmitting && !isAnswerCorrect) {
+                      if (
+                        e.key === "Enter" &&
+                        !isSubmitting &&
+                        !isAnswerCorrect
+                      ) {
                         handleSubmitAnswer();
                       }
                     }}
@@ -581,7 +591,9 @@ const QuizGameComponent = () => {
 
                 <Button
                   onClick={handleSubmitAnswer}
-                  disabled={!userAnswer.trim() || isSubmitting || isAnswerCorrect}
+                  disabled={
+                    !userAnswer.trim() || isSubmitting || isAnswerCorrect
+                  }
                   className="w-full h-16 text-xl font-semibold bg-slate-800 hover:bg-slate-700 text-white shadow-lg rounded-lg"
                 >
                   {isSubmitting ? (
@@ -594,7 +606,10 @@ const QuizGameComponent = () => {
                   ) : (
                     <>
                       <Send className="w-6 h-6 mr-3" />
-                      提交答案{wrongAttempts > 0 ? ` (第${wrongAttempts + 1}次嘗試)` : ""}
+                      提交答案
+                      {wrongAttempts > 0
+                        ? ` (第${wrongAttempts + 1}次嘗試)`
+                        : ""}
                     </>
                   )}
                 </Button>
@@ -607,7 +622,12 @@ const QuizGameComponent = () => {
 
                 {wrongAttempts > 0 && !isAnswerCorrect && (
                   <div className="text-center">
-                    <Badge variant="destructive" className="px-4 py-2 text-base">已嘗試 {wrongAttempts} 次，繼續努力！</Badge>
+                    <Badge
+                      variant="destructive"
+                      className="px-4 py-2 text-base"
+                    >
+                      已嘗試 {wrongAttempts} 次，繼續努力！
+                    </Badge>
                   </div>
                 )}
               </div>
@@ -620,7 +640,6 @@ const QuizGameComponent = () => {
 };
 
 export default QuizGameComponent;
-
 
 // ##############     應實作概念     ##############
 // ############## 遊戲前準備 ##############

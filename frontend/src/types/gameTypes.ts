@@ -13,7 +13,7 @@ export interface Player {
   isHost?: boolean;
   score?: number;
   joinedAt?: string;
-  rank?: number;  
+  rank?: number;
 }
 
 export interface Room {
@@ -106,4 +106,3 @@ export interface GameInfo {
   hostId: string;
   questionCount?: number;
 }
-

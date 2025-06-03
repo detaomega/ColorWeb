@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Loader2, Users, Clock } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+import React, { useState } from "react";
+import { Loader2, Users, Clock } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 
 const WaitingScreenUI = () => {
   // 模擬數據
@@ -39,16 +39,19 @@ const WaitingScreenUI = () => {
                   {completedPlayers}/{totalPlayers}
                 </span>
               </div>
-              <Badge variant="outline" className="text-xl px-6 py-3 border-slate-300">
+              <Badge
+                variant="outline"
+                className="text-xl px-6 py-3 border-slate-300"
+              >
                 {Math.round(completionPercentage)}% 完成
               </Badge>
             </div>
 
             {/* 進度條 */}
             <div className="space-y-4">
-              <Progress 
-                value={completionPercentage} 
-                className="h-6 bg-slate-200" 
+              <Progress
+                value={completionPercentage}
+                className="h-6 bg-slate-200"
               />
               <p className="text-lg text-slate-500">
                 還有 {totalPlayers - completedPlayers} 位玩家尚未完成
@@ -58,7 +61,9 @@ const WaitingScreenUI = () => {
 
           {/* 玩家狀態指示器 */}
           <div className="space-y-6">
-            <h3 className="text-xl font-semibold text-slate-700">玩家完成狀態</h3>
+            <h3 className="text-xl font-semibold text-slate-700">
+              玩家完成狀態
+            </h3>
             <div className="flex justify-center space-x-4 flex-wrap gap-y-4">
               {[...Array(totalPlayers)].map((_, index) => (
                 <div

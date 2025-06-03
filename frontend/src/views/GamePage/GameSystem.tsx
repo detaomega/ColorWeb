@@ -99,7 +99,6 @@ const GamePage: React.FC = () => {
           />
         );
 
-
       default:
         return <div>載入中...</div>;
     }
