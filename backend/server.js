@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+const fs = require('fs');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 
@@ -67,7 +68,28 @@ app.get('/health', (req, res) => {
 // 註冊路由
 app.use('/api/games', gameRoute);
 app.use('/api', questionRoute);
+app.get('/api/data/*', (req, res) => {
+  const dataDir = path.join(__dirname, 'create_data');
+  // 取得多層路徑
+  const requestedPath = req.params[0];
+  const filePath = path.join(dataDir, requestedPath);
 
+  // 防止路徑穿越攻擊
+  if (!filePath.startsWith(dataDir)) {
+    return res.status(400).send('無效路徑');
+  }
+
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).send('檔案不存在');
+  }
+  if (fs.lstatSync(filePath).isDirectory()) {
+    return res.status(403).send('禁止瀏覽資料夾');
+  }
+  res.sendFile(filePath);
+});
+
+// 提供 create_data 目錄下的檔案靜態存取
+app.use('/data', express.static(path.join(__dirname, 'create_data')));
 // 錯誤處理中間件
 app.use((err, req, res, next) => {
   console.error(err.stack);
