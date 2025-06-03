@@ -102,7 +102,7 @@ app.use((err, req, res, next) => {
 
 // 啟動伺服器
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+server.listen(PORT, "0.0.0.0", () => {
   console.log(`伺服器運行在端口 ${PORT}`);
   console.log(`API 文檔可在 http://localhost:${PORT}/api-docs 查看`);
   console.log(`健康檢查可在 http://localhost:${PORT}/health 查看`);

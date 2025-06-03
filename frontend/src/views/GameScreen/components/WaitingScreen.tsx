@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Loader2, Users, Clock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -6,8 +6,8 @@ import { Badge } from "@/components/ui/badge";
 
 const WaitingScreenUI = () => {
   // 模擬數據
-  const [completedPlayers, setCompletedPlayers] = useState(5);
-  const [totalPlayers, setTotalPlayers] = useState(8);
+  const [completedPlayers] = useState(5);
+  const [totalPlayers] = useState(8);
 
   const completionPercentage = (completedPlayers / totalPlayers) * 100;
 

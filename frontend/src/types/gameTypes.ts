@@ -21,8 +21,8 @@ export interface Room {
   code: string;
   host?: Player;
   players: Player[];
-  maxPlayers?: number;
-  minPlayers?: number;
+  maxPlayers: number | 50;
+  minPlayers: number | 2;
   isGameStarted?: boolean;
   createdAt?: Date;
 }

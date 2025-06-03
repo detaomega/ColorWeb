@@ -92,6 +92,8 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
       code: roomCode,
       players: [],
       hostname: "test",
+      maxPlayers: 50,
+      minPlayers: 2,
     };
 
     setIsJoining(false);

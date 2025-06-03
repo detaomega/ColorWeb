@@ -86,6 +86,10 @@ function initSocket(server) {
       }
     });
 
+    socket.on('request-game-start', async ({ gameId}) => {
+      console.log(`玩家請求房間 ${gameId} 開始`);
+      io.in(gameId).emit('start-game');
+    });
     // 可以添加更多遊戲相關的事件處理
     socket.on('send-answer', ({ gameId, username, answer }) => {
       console.log(`${username} 在房間 ${gameId} 提交答案: ${answer}`);
