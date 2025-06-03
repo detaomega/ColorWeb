@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Copy, Check, Users, Crown, Clock } from "lucide-react";
 import { io, Socket } from "socket.io-client";
+import { useNavigate } from "react-router-dom";
 import type { Player, Room } from "@/types/gameTypes";
 // Mock types (replace with your actual types)
 
@@ -24,6 +25,7 @@ const GameLobby: React.FC<GameLobbyProps> = ({
   const [copySuccess, setCopySuccess] = useState<boolean>(false);
   const socketRef = useRef<Socket | null>(null);
   const [gameId, setGameId] = useState<string>("");
+  const navigate = useNavigate();
   // Finish web socket to get user information.
   useEffect(() => {
     setGameId(room.code ?? "");
@@ -58,19 +60,26 @@ const GameLobby: React.FC<GameLobbyProps> = ({
         setLocalRoom((prevRoom) => ({
           ...prevRoom,
           host: { ...hostPlayer },
+          maxPlayers: 50,
+          minPlayers: 2,
         }));
       }
       setLocalRoom((prevRoom) => ({ ...prevRoom, players: allPlayers }));
     });
-
-    socketRef.current.on("start-game", () => {});
+    socketRef.current.on("start-game", () => {
+      navigate("/game");
+    });
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
       }
     };
   }, [gameId, localRoom.code, room.code]);
-
+  const requestGameStart = () => {
+    if (socketRef.current && currentPlayer.isHost) {
+      socketRef.current.emit("request-game-start", { gameId });
+    }
+  };
   // 複製房間代碼
   const copyRoomCode = async () => {
     try {
@@ -265,7 +274,7 @@ const GameLobby: React.FC<GameLobbyProps> = ({
               {currentPlayer.isHost && (
                 <div className="space-y-6">
                   <Button
-                    onClick={handleStartGame}
+                    onClick={requestGameStart}
                     disabled={!canStartGame()}
                     className="w-full py-4 text-lg font-semibold h-auto"
                   >
