@@ -1,11 +1,5 @@
 // controllers/gameController.js
 const Game = require('../db_structures/game');
-<<<<<<< Updated upstream
-const GameQuestion = require('../db_structures/gameQuestion');
-const Question = require('../db_structures/question');
-const { customAlphabet } = require('nanoid');
-const { getIo } = require('../socketServer');
-=======
 const { nanoid } = require('nanoid');
 const fs = require('fs');
 const path = require('path');
@@ -52,7 +46,6 @@ function selectRandomQuestions(animeData, count = 10) {
   return questions;
 }
 
->>>>>>> Stashed changes
 // 創建新遊戲
 exports.createGame = async (req, res) => {
   try {
@@ -70,11 +63,7 @@ exports.createGame = async (req, res) => {
       gameTitle: gameTitle || "Anime Guessing Game",
       settings: settings || {},
       players: [], // 初始化空的玩家列表
-<<<<<<< Updated upstream
-      hostId: hostId
-=======
       questions: [] // 初始化空的問題列表
->>>>>>> Stashed changes
     });
     
     await game.save();
