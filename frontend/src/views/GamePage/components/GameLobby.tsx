@@ -66,7 +66,7 @@ const GameLobby: React.FC<GameLobbyProps> = ({
       setLocalRoom((prevRoom) => ({ ...prevRoom, players: allPlayers }));
     });
     socketRef.current.on("start-game", () => {
-      navigate("/game");
+      navigate("/game", { state: { gameId }, }); 
     });
     return () => {
       if (socketRef.current) {

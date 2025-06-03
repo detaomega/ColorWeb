@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import WaitingScreenUI from "@/views/GameScreen/components/WaitingScreen";
 import CountdownScreen from "@/views/GameScreen/components/CountDownScreen";
+import { useLocation } from "react-router-dom";
 
 type Question = {
   id: string;
@@ -33,15 +34,16 @@ type PlayerState = "waiting" | "playing" | "loading" | "finished" | "rankings";
 
 const QuizGameComponent = () => {
   // ##############全域遊戲基本資料##############
-  const [gameId] = useState("game-123");
+  const location = useLocation();
+  const gameId = location.state?.gameId;
   const [totalPlayers] = useState(4);
-  const [totalQuestions] = useState(5);
+  const [totalQuestions] = useState(7);
   const [completedPlayers, setCompletedPlayers] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   // ##############玩家個人遊戲基本資料##############
   const [gameState, setGameState] = useState<PlayerState>("waiting");
-  const [timeLeft, setTimeLeft] = useState(35);
+  const [timeLeft, setTimeLeft] = useState(7 * 7);
   const [userAnswer, setUserAnswer] = useState("");
   const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1);
   const [currentScore, setCurrentScore] = useState(0);
@@ -83,7 +85,7 @@ const QuizGameComponent = () => {
 
       setCurrentQuestion(questionData);
       setCurrentImageIndex(0);
-      setTimeLeft(35);
+      setTimeLeft(49);
       setUserAnswer("");
       setCompletedPlayers(0);
       setWrongAttempts(0);
@@ -106,7 +108,7 @@ const QuizGameComponent = () => {
 
       setCurrentQuestion(mockQuestion);
       setCurrentImageIndex(0);
-      setTimeLeft(35);
+      setTimeLeft(49);
       setUserAnswer("");
       setCompletedPlayers(0);
       setWrongAttempts(0);
@@ -140,7 +142,7 @@ const QuizGameComponent = () => {
   // 圖片切換（每7秒換一張）
   useEffect(() => {
     if (gameState !== "playing" || !currentQuestion) return;
-
+    
     const imageTimer = setInterval(() => {
       setCurrentImageIndex(
         (prev) => (prev + 1) % currentQuestion.images.length,
@@ -481,7 +483,7 @@ const QuizGameComponent = () => {
 
             {/* 進度條 */}
             <Progress
-              value={((35 - timeLeft) / 35) * 100}
+              value={((49 - timeLeft) / 49) * 100}
               className="h-4 bg-slate-200"
             />
           </CardContent>
