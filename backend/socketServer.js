@@ -18,44 +18,6 @@ function initSocket(server) {
   io.on('connection', (socket) => {
     console.log('一位使用者已連線:', socket.id);
 
-    socket.on('join-game', async ({ gameId, username }) => {
-      console.log(`使用者 ${username} 嘗試加入房間 ${gameId}`);
-      
-      socket.join(gameId);
-      socketUserMap.set(socket.id, { gameId, username });
-      console.log(`使用者 ${username} 成功加入房間 ${gameId}`);
-      
-      try {
-        // 獲取房間內所有玩家（包括剛加入的）
-        const Game = require('./db_structures/game');
-        const game = await Game.findOne({ gameId });
-        
-        if (game) {
-          // 發送完整的玩家列表給新加入的玩家
-          const allPlayers = game.players.map(p => ({ 
-            username: p.username, 
-            score: p.score || 0 
-          }));
-          
-          console.log(`向 ${username} 發送完整玩家列表:`, allPlayers);
-          socket.emit('room-players', allPlayers);
-          
-          // 廣播新玩家加入給房間內其他人（不包括自己）
-          const newPlayer = { username, score: 0 };
-          socket.to(gameId).emit('player-joined', newPlayer);
-          console.log(`廣播新玩家 ${username} 加入房間給其他玩家`);
-        } else {
-          console.log(`房間 ${gameId} 不存在於資料庫中`);
-          // 如果房間不存在，至少發送當前玩家
-          socket.emit('room-players', [{ username, score: 0 }]);
-        }
-      } catch (error) {
-        console.error('處理玩家加入時發生錯誤:', error);
-        // 發生錯誤時，至少發送當前玩家
-        socket.emit('room-players', [{ username, score: 0 }]);
-      }
-    });
-
     socket.on('disconnect', async () => {
       const userInfo = socketUserMap.get(socket.id);
       if (userInfo) {
@@ -97,6 +59,7 @@ function initSocket(server) {
     // 處理玩家請求房間內所有玩家列表
     socket.on('request-room-players', async ({ gameId }) => {
       console.log(`玩家請求房間 ${gameId} 的玩家列表`);
+      socket.join(gameId);
       
       try {
         const Game = require('./db_structures/game');
@@ -105,10 +68,13 @@ function initSocket(server) {
         if (game) {
           const allPlayers = game.players.map(p => ({ 
             username: p.username, 
-            score: p.score || 0 
+            score: p.score || 0,
+            isHost: game.hostId == p.username,
+            isReady: true
           }));
           
-          socket.emit('room-players', allPlayers);
+          io.in(gameId).emit('room-players', allPlayers);
+          // socket.emit('room-players', allPlayers);
           console.log(`發送房間 ${gameId} 玩家列表:`, allPlayers);
         } else {
           socket.emit('room-players', []);

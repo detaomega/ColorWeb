@@ -9,19 +9,22 @@ export type GameState =
 export interface Player {
   id: string;
   username: string;
-  isReady: boolean;
-  isHost: boolean;
+  isReady?: boolean;
+  isHost?: boolean;
+  score?: number;
+  joinedAt?: string;
+  rank?: number;  
 }
 
 export interface Room {
-  id: string;
+  id?: string;
   code: string;
-  host: Player;
+  host?: Player;
   players: Player[];
-  maxPlayers: number;
-  minPlayers: number;
-  isGameStarted: boolean;
-  createdAt: Date;
+  maxPlayers?: number;
+  minPlayers?: number;
+  isGameStarted?: boolean;
+  createdAt?: Date;
 }
 
 export interface GameConfig {
@@ -64,15 +67,6 @@ export interface GameCreate {
   hostId: string;
 }
 
-export interface Players {
-  username: string;
-  score: number;
-  joinedAt: string;
-  rank?: number;  
-  isHost?: boolean;
-  isReady?: boolean;
-}
-
 export interface CreateGameResponse {
   success: boolean;
   message: string;
@@ -87,7 +81,7 @@ export interface CreateGameResponse {
       maxPointsPerQuestion: number;
       rounds: number;
     };
-    players: Players[];
+    players: Player[];
     _id: string;
     createdAt: string;
     __v: number;
@@ -104,7 +98,7 @@ export interface GameInfo {
     maxPointsPerQuestion: number;
     rounds: number;
   };
-  players: Players[];
+  players: Player[];
   currentQuestionNumber: number;
   startedAt: string;
   finishedAt: string | null;

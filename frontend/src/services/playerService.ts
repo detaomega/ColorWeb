@@ -8,7 +8,7 @@ export const addNewPlayers = async (GameId: string, Username: string) => {
   });
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.error || "房間加入失敗");
+    return errorData;
   }
   const data = await response.json();
   return data;

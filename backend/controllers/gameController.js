@@ -178,9 +178,6 @@ exports.addPlayer = async (req, res) => {
       message: '成功加入遊戲',
       player: addedPlayer
     });
-    const { getIo } = require('../socketServer');
-    const io = getIo();
-    io.to(gameId).emit('player-joined', addedPlayer);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -390,10 +387,10 @@ exports.getPlayers = async (req, res) => {
     
     // 獲取玩家排名
     const rankedPlayers = game.getRankedPlayers();
-    
     res.status(200).json({
       success: true,
-      players: rankedPlayers
+      players: rankedPlayers,
+      hostId: game.hostId
     });
   } catch (error) {
     res.status(500).json({

@@ -5,25 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Users, Gamepad2 } from 'lucide-react';
-
+import { type Room, type Player } from "@/types/gameTypes"
+import { addNewPlayers } from '@/services/playerService';
 // Mock types (replace with your actual types)
-interface Player {
-  id: string;
-  username: string;
-  isHost?: boolean;
-  isReady?: boolean;
-}
-
-interface Room {
-  id: string;
-  code: string;
-  host: Player;
-  players: Player[];
-  maxPlayers: number;
-  minPlayers: number;
-  isGameStarted: boolean;
-  createdAt: Date;
-}
 
 interface JoinRoomProps {
   player: Player;
@@ -36,7 +20,7 @@ const mockRooms: Room[] = [
   {
     id: "1",
     code: "ABC12345",
-    host: { id: "host1", username: "Alice" },
+    host: { id: "host1", username: "Alice", isHost: true, isReady: false },
     players: [
       { id: "host1", username: "Alice", isHost: true },
       { id: "2", username: "Bob" },
@@ -49,7 +33,7 @@ const mockRooms: Room[] = [
   {
     id: "2",
     code: "XYZ78912",
-    host: { id: "host2", username: "Charlie" },
+    host: { id: "host2", username: "Charlie", isHost: true, isReady: false },
     players: [{ id: "host2", username: "Charlie", isHost: true }],
     maxPlayers: 6,
     minPlayers: 2,
@@ -79,45 +63,38 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
     setError("");
 
     // 模擬加入房間的延遲
-    await new Promise((resolve) => setTimeout(resolve, 1000));
 
+  
     // 查找房間（在實際應用中，這會是 API 調用）
-    const targetRoom = mockRooms.find(
-      (room) => room.code.toLowerCase() === roomCode.toLowerCase().trim(),
-    );
-
-    if (!targetRoom) {
+    const response = await addNewPlayers(roomCode, player.username);
+    if (response.success == "false" && response.message == "找不到遊戲") {
       setError("找不到該房間代碼，請檢查代碼是否正確");
       setIsJoining(false);
       return;
     }
 
-    if (targetRoom.players.length >= targetRoom.maxPlayers) {
-      setError("房間已滿，無法加入");
-      setIsJoining(false);
-      return;
-    }
 
-    if (targetRoom.isGameStarted) {
+    if (response.success == "false" && response.message == "遊戲已經開始或已結束，無法加入新玩家") {
       setError("遊戲已開始，無法加入");
       setIsJoining(false);
       return;
     }
 
-    // 檢查玩家是否已在房間中
-    const isPlayerInRoom = targetRoom.players.some((p) => p.id === player.id);
-
-    if (isPlayerInRoom) {
-      setError("你已經在這個房間中了");
+    if (response.success == "false" && response.message == "該用戶名已被使用") {
+      setError("遊戲名稱已經重複");
       setIsJoining(false);
       return;
     }
 
+      
+
+
     // 加入房間
-    const updatedRoom: Room = {
-      ...targetRoom,
-      players: [...targetRoom.players, { ...player, isReady: false }],
-    };
+    const updatedRoom = {
+    code: roomCode,
+    players: [],
+    hostname: "test"
+  };
 
     setIsJoining(false);
     onRoomJoined(updatedRoom);
@@ -170,7 +147,7 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
                   value={roomCode}
                   onChange={handleInputChange}
                   placeholder="輸入 8 位房間代碼"
-                  maxLength={6}
+                  maxLength={8}
                   autoFocus
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -238,7 +215,7 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
                           </Badge>
                         </div>
                         <p className="text-muted-foreground">
-                          房主: <span className="font-semibold">{room.host.username}</span>
+                          房主: <span className="font-semibold">{room.host?.username ?? "" }</span>
                         </p>
                       </div>
                       <Button

@@ -1,27 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Copy, Check, Users, Crown, Clock } from 'lucide-react';
+import { io, Socket } from 'socket.io-client';
+import type { Player, Room } from "@/types/gameTypes";
 // Mock types (replace with your actual types)
-interface Player {
-  id: string;
-  nickname: string;
-  isHost?: boolean;
-  isReady?: boolean;
-}
-
-interface Room {
-  id: string;
-  code: string;
-  host: Player;
-  players: Player[];
-  maxPlayers: number;
-  minPlayers: number;
-  isGameStarted: boolean;
-  createdAt: Date;
-}
 
 interface GameLobbyProps {
   room: Room;
@@ -38,17 +23,55 @@ const GameLobby: React.FC<GameLobbyProps> = ({
 }) => {
   const [localRoom, setLocalRoom] = useState<Room>(room);
   const [copySuccess, setCopySuccess] = useState<boolean>(false);
+  const socketRef = useRef<Socket | null>(null);
+  const [gameId, setGameId] = useState<string>("")
+  // Finish web socket to get user information.
+  useEffect(() => {
+      setGameId(room.code ?? "")
+      // 創建 socket 連接時指定更多選項
+      socketRef.current = io('http://localhost:3000', { 
+        transports: ['websocket', 'polling'],
+        withCredentials: true,
+        forceNew: true,
+        timeout: 5000
+      });
+      console.log(room.code, gameId)
+  
+      // 監聽連接狀態
+      socketRef.current.on('connect', () => {
+        console.log('Socket 已連接:', socketRef.current?.id);
+        // 如果已經加入遊戲，重新請求玩家列表
+      });
+      socketRef.current.emit('request-room-players', { gameId }); 
+      socketRef.current.on('disconnect', () => {
+        console.log('Socket 已斷線');
+      });
 
-  // 更新本地玩家的準備狀態
-  const toggleReady = () => {
-    const updatedPlayers = localRoom.players.map((player) =>
-      player.id === currentPlayer.id
-        ? { ...player, isReady: !player.isReady }
-        : player,
-    );
+      socketRef.current.on('connect_error', (error) => {
+        console.error('Socket 連接錯誤:', error);
+      });
 
-    setLocalRoom({ ...localRoom, players: updatedPlayers });
-  };
+      // 處理房間完整玩家列表（用於同步所有玩家）
+      socketRef.current.on('room-players', (allPlayers: Player[]) => {
+        console.log('收到房間完整玩家列表:', allPlayers);
+        const hostPlayer = allPlayers.find(player => player.isHost);
+        if (hostPlayer) {
+          setLocalRoom(prevRoom => ({
+            ...prevRoom,
+            host: { ...hostPlayer }
+          }));
+        }
+        setLocalRoom((prevRoom) => 
+          ({ ...prevRoom, players: allPlayers }));
+        
+      });
+      return () => {
+        if (socketRef.current) {
+          socketRef.current.disconnect();
+        }
+      };
+  }, [gameId, localRoom.code, room.code]);
+
 
   // 複製房間代碼
   const copyRoomCode = async () => {
@@ -78,11 +101,6 @@ const GameLobby: React.FC<GameLobbyProps> = ({
     }
   };
 
-  const getCurrentPlayerInRoom = () => {
-    return localRoom.players.find((p) => p.id === currentPlayer.id);
-  };
-
-  const currentPlayerInRoom = getCurrentPlayerInRoom();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-6">
@@ -142,7 +160,7 @@ const GameLobby: React.FC<GameLobbyProps> = ({
                 <div className="text-center">
                   <p className="text-slate-500 text-base mb-2">房主</p>
                   <p className="font-semibold text-slate-900 text-lg">
-                    {localRoom.host.nickname}
+                    {localRoom.host?.username}
                   </p>
                 </div>
                 <div className="text-center">
@@ -173,7 +191,7 @@ const GameLobby: React.FC<GameLobbyProps> = ({
               <div className="space-y-4">
                 {localRoom.players.map((player) => (
                   <div
-                    key={player.id}
+                    key={player.username}
                     className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-200 ${
                       player.isReady || player.isHost
                         ? "border-slate-300 bg-slate-50"
@@ -182,12 +200,12 @@ const GameLobby: React.FC<GameLobbyProps> = ({
                   >
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center text-lg font-semibold text-slate-700">
-                        {player.nickname.charAt(0).toUpperCase()}
+                        {player.username.charAt(0).toUpperCase()}
                       </div>
                       <div>
                         <div className="flex items-center gap-3">
                           <span className="font-semibold text-slate-900 text-lg">
-                            {player.nickname}
+                            {player.username}
                           </span>
                           {player.isHost && (
                             <Badge variant="secondary" className="flex items-center gap-1 px-3 py-1">
@@ -235,15 +253,10 @@ const GameLobby: React.FC<GameLobbyProps> = ({
             <CardContent className="p-8">
               {!currentPlayer.isHost && (
                 <Button
-                  onClick={toggleReady}
-                  className={`w-full py-4 text-lg font-semibold h-auto ${
-                    currentPlayerInRoom?.isReady
-                      ? "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                      : ""
-                  }`}
-                  variant={currentPlayerInRoom?.isReady ? "secondary" : "default"}
+                  className={`w-full py-4 text-lg font-semibold h-auto bg-slate-100 text-slate-700 hover:bg-slate-200`}
+                  variant={"secondary"}
                 >
-                  {currentPlayerInRoom?.isReady ? "取消準備" : "準備完成"}
+                  {"等待開始"}
                 </Button>
               )}
 
