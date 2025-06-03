@@ -41,7 +41,7 @@ function loadAnimeData() {
   }
 }
 
-// 隨機選擇遊戲問題
+// 隨機選擇遊戲問題（增強版 - 包含答案讀取）
 function selectRandomQuestions(animeData, count = 10) {
   const animeList = Object.keys(animeData);
   
@@ -55,20 +55,64 @@ function selectRandomQuestions(animeData, count = 10) {
   // 選擇前 count 部動漫（確保不重複）
   const selectedAnime = shuffledAnime.slice(0, count);
   
-  // 為每部動漫隨機選擇一個圖片集
+  // 為每部動漫隨機選擇一個圖片集並讀取答案
   const questions = selectedAnime.map((animeTitle, index) => {
     const imagePaths = animeData[animeTitle].images;
     const randomImagePath = imagePaths[Math.floor(Math.random() * imagePaths.length)];
     
+    // 讀取答案檔案
+    const answer = readAnswerFile(randomImagePath);
+    
     return {
       animeTitle: animeTitle,
       imagePath: randomImagePath,
+      answer: answer, // 新增答案欄位
       order: index + 1,
       status: 'pending'
     };
   });
   
   return questions;
+}
+
+// 讀取答案檔案的函數
+function readAnswerFile(imagePath) {
+  try {
+    // 將相對路徑轉換為絕對路徑
+    const absoluteImagePath = path.resolve(imagePath);
+    
+    // 取得圖片資料夾的父目錄（動漫資料夾）
+    const animeDirectory = path.dirname(absoluteImagePath);
+    
+    // 構建 answer.txt 的路徑
+    const answerFilePath = path.join(animeDirectory, 'answer.txt');
+    
+    console.log('🔍 尋找答案檔案:', answerFilePath);
+    
+    // 檢查檔案是否存在
+    if (!fs.existsSync(answerFilePath)) {
+      console.warn('⚠️ 答案檔案不存在:', answerFilePath);
+      return null; // 或返回預設值
+    }
+    
+    // 讀取並處理答案檔案
+    const answerContent = fs.readFileSync(answerFilePath, 'utf8').trim();
+    
+    console.log('✅ 成功讀取答案:', answerContent);
+    
+    // 如果答案檔案包含多行，可以用分號或換行分割
+    const answers = answerContent.split(/[;\n]/).map(ans => ans.trim()).filter(ans => ans.length > 0);
+    
+    return {
+      primary: answers[0] || answerContent, // 主要答案
+      alternatives: answers.slice(1) || []   // 替代答案
+    };
+    
+  } catch (error) {
+    console.error('❌ 讀取答案檔案失敗:', error.message);
+    console.error('❌ 圖片路徑:', imagePath);
+    return null;
+  }
 }
 
 // 創建新遊戲
