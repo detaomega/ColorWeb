@@ -4,6 +4,31 @@ const { nanoid } = require('nanoid');
 const fs = require('fs');
 const path = require('path');
 
+// 在 gameController.js 最頂部加入這個
+console.log('=== 啟動時路徑檢查 ===');
+console.log('__dirname:', __dirname);
+const testPath = path.join(__dirname, '../anime_path.json');
+console.log('測試路徑:', testPath);
+console.log('檔案存在:', fs.existsSync(testPath));
+
+if (fs.existsSync(testPath)) {
+  try {
+    const testData = JSON.parse(fs.readFileSync(testPath, 'utf8'));
+    console.log('✅ 檔案讀取成功，動漫數量:', Object.keys(testData).length);
+  } catch (e) {
+    console.log('❌ 檔案讀取失敗:', e.message);
+  }
+} else {
+  console.log('❌ 檔案不存在，檢查這些位置:');
+  [
+    path.join(__dirname, '../anime_path.json'),
+    path.join(__dirname, '../../anime_path.json'),
+    path.join(__dirname, '../../../anime_path.json')
+  ].forEach(p => {
+    console.log(`  ${p}: ${fs.existsSync(p) ? '存在' : '不存在'}`);
+  });
+}
+
 // 讀取動漫資料
 function loadAnimeData() {
   try {
@@ -54,7 +79,6 @@ exports.createGame = async (req, res) => {
       settings,
       hostId
     } = req.body;
-    const nanoid = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 8);
     const gameId = nanoid(8); // 生成唯一遊戲ID
     
     // 創建遊戲，可選設定
