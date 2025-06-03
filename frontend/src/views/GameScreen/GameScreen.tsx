@@ -39,7 +39,6 @@ const QuizGameComponent = () => {
   const [completedPlayers, setCompletedPlayers] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
   // ##############玩家個人遊戲基本資料##############
   const [gameState, setGameState] = useState<PlayerState>("waiting");
   const [timeLeft, setTimeLeft] = useState(35);
