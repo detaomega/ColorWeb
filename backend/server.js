@@ -64,7 +64,7 @@ app.use((err, req, res, next) => {
 
 // ✅ 啟動伺服器 - 使用 server.listen 而不是 app.listen
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
+server.listen(PORT, "0.0.0.0", () => {
   console.log(`伺服器運行在端口 ${PORT}`);
   console.log(`Swagger 文檔: http://localhost:${PORT}/api-docs`);
 });

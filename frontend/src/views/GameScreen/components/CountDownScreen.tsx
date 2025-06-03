@@ -7,9 +7,9 @@ interface CountDownProps {
   startGame: () => void;
 }
 
-export default function CountDownScreen(props: CountDownProps) {
+export default function CountDownScreen({ startGame }: CountDownProps) {
   const [countdown, setCountdown] = useState(5);
-  const [isActive, setIsActive] = useState(true); // 直接開始倒數
+  const [isActive] = useState(true); // 直接開始倒數
 
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined = undefined;
@@ -19,15 +19,10 @@ export default function CountDownScreen(props: CountDownProps) {
       }, 1000);
     } else if (countdown === 0) {
       // 倒數結束後的動作
-      props.startGame();
+      startGame();
     }
     return () => clearInterval(interval);
-  }, [isActive, countdown]);
-
-  const resetCountdown = () => {
-    setCountdown(5);
-    // 重置後也自動開始倒數
-  };
+  }, [isActive, countdown, startGame]);
 
   const progressValue = ((5 - countdown) / 5) * 100;
 

@@ -18,7 +18,6 @@ interface GameLobbyProps {
 const GameLobby: React.FC<GameLobbyProps> = ({
   room,
   currentPlayer,
-  onStartGame,
   onBack,
 }) => {
   const [localRoom, setLocalRoom] = useState<Room>(room);
@@ -30,7 +29,7 @@ const GameLobby: React.FC<GameLobbyProps> = ({
   useEffect(() => {
     setGameId(room.code ?? "");
     // 創建 socket 連接時指定更多選項
-    socketRef.current = io("http://localhost:3000", {
+    socketRef.current = io("/", {
       transports: ["websocket", "polling"],
       withCredentials: true,
       forceNew: true,
@@ -100,12 +99,6 @@ const GameLobby: React.FC<GameLobbyProps> = ({
       (player) => player.isReady || player.isHost,
     );
     return readyPlayers.length === localRoom.players.length;
-  };
-
-  const handleStartGame = () => {
-    if (canStartGame()) {
-      onStartGame();
-    }
   };
 
   return (

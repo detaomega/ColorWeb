@@ -42,21 +42,3 @@ export const formatRoomCode = (code: string): string => {
  * @param playerId 玩家ID
  * @returns 是否可以加入及原因
  */
-export const canPlayerJoinRoom = (
-  room: any,
-  playerId: string,
-): { canJoin: boolean; reason?: string } => {
-  if (room.isGameStarted) {
-    return { canJoin: false, reason: "遊戲已開始" };
-  }
-
-  if (room.players.length >= room.maxPlayers) {
-    return { canJoin: false, reason: "房間已滿" };
-  }
-
-  if (room.players.some((p: any) => p.id === playerId)) {
-    return { canJoin: false, reason: "已在房間中" };
-  }
-
-  return { canJoin: true };
-};
