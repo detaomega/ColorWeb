@@ -1,147 +1,49 @@
-// controllers/gamecontroller.js
+// controllers/questionController.js
 const Game = require('../db_structures/game');
-const GameQuestion = require('../db_structures/gameQuestion');
-const Question = require('../db_structures/question');
-const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
+const path = require('path');
 
-// 創建新動漫問題 - 超簡化版
-exports.createQuestion = async (req, res) => {
+// 讀取動漫資料
+function loadAnimeData() {
   try {
-    const { 
-      animeTitle, 
-      alternativeTitles, 
-      imageSets 
-    } = req.body;
-    
-    // 驗證必要欄位
-    if (!animeTitle || !imageSets || imageSets.length < 1) {
-      return res.status(400).json({
-        success: false,
-        message: '動漫標題和至少1組圖片集是必需的'
-      });
-    }
-    
-    // 確保每組圖片至少有3張
-    const invalidSets = imageSets.filter(set => !set.images || set.images.length < 3);
-    if (invalidSets.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: '每組圖片至少需要3張圖片'
-      });
-    }
-    
-    // 確保每組圖片都有ID
-    const processedImageSets = imageSets.map(set => ({
-      setId: set.setId || uuidv4(),
-      setName: set.setName,
-      images: set.images  // 直接存儲URL陣列
-    }));
-    
-    const question = new Question({
-      animeTitle,
-      alternativeTitles: alternativeTitles || [],
-      imageSets: processedImageSets
-    });
-    
-    await question.save();
-    
-    res.status(201).json({
-      success: true,
-      message: '動漫問題創建成功',
-      question
-    });
+    const dataPath = path.join(__dirname, '../anime_path.json');
+    const rawData = fs.readFileSync(dataPath, 'utf8');
+    return JSON.parse(rawData);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: '創建問題失敗',
-      error: error.message
-    });
+    console.error('讀取動漫資料失敗:', error);
+    return {};
   }
-};
+}
 
-// 向遊戲添加問題 - 超簡化版
-exports.addQuestionsToGame = async (req, res) => {
+// 獲取圖片資料夾中的所有圖片檔案
+function getImagesFromPath(imagePath) {
   try {
-    const { gameId } = req.params;
-    const { count = 10 } = req.body;
+    // 將相對路徑轉換為絕對路徑
+    const absolutePath = path.resolve(imagePath);
     
-    // 檢查遊戲
-    const game = await Game.findOne({ gameId });
-    
-    if (!game) {
-      return res.status(404).json({ success: false, message: '找不到遊戲' });
+    if (!fs.existsSync(absolutePath)) {
+      console.error('圖片資料夾不存在:', absolutePath);
+      return [];
     }
     
-    if (game.status !== 'waiting') {
-      return res.status(400).json({ success: false, message: '只能在遊戲開始前添加問題' });
-    }
+    // 讀取資料夾中的所有檔案
+    const files = fs.readdirSync(absolutePath);
     
-    // 隨機選擇問題
-    const selectedQuestions = await Question.aggregate([
-      { $sample: { size: parseInt(count) } }
-    ]);
-    
-    if (selectedQuestions.length === 0) {
-      return res.status(404).json({ success: false, message: '數據庫中沒有可用問題' });
-    }
-    
-    // 獲取當前最大順序
-    const existingQuestions = await GameQuestion.find({ gameId }).sort({ order: -1 }).limit(1);
-    let startOrder = 1;
-    
-    if (existingQuestions.length > 0) {
-      startOrder = existingQuestions[0].order + 1;
-    }
-    
-    // 為每個問題隨機選擇一個圖片集
-    const gameQuestions = [];
-    
-    for (let i = 0; i < selectedQuestions.length; i++) {
-      const question = selectedQuestions[i];
-      
-      if (!question.imageSets || question.imageSets.length === 0) continue;
-      
-      // 隨機選一個圖片集
-      const randomSetIndex = Math.floor(Math.random() * question.imageSets.length);
-      const selectedSet = question.imageSets[randomSetIndex];
-      
-      if (!selectedSet || !selectedSet.setId) continue;
-      
-      gameQuestions.push({
-        gameId: game.gameId,
-        questionId: question._id,
-        imageSetId: selectedSet.setId,
-        order: startOrder + i
-      });
-    }
-    
-    if (gameQuestions.length === 0) {
-      return res.status(400).json({ success: false, message: '沒有有效的問題可添加' });
-    }
-    
-    // 插入問題
-    const insertedQuestions = await GameQuestion.insertMany(
-      gameQuestions, 
-      { ordered: false }
-    ).catch(err => {
-      return err.insertedDocs || [];
+    // 篩選圖片檔案（jpg, jpeg, png, gif）
+    const imageFiles = files.filter(file => {
+      const ext = path.extname(file).toLowerCase();
+      return ['.jpg', '.jpeg', '.png', '.gif'].includes(ext);
     });
     
-    res.status(200).json({
-      success: true,
-      message: `成功添加 ${insertedQuestions.length} 個問題到遊戲`,
-      count: insertedQuestions.length
-    });
+    // 返回完整的檔案路徑
+    return imageFiles.map(file => path.join(absolutePath, file));
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: '添加問題到遊戲失敗',
-      error: error.message 
-    });
+    console.error('讀取圖片資料夾失敗:', error);
+    return [];
   }
-};
+}
 
-// 獲取當前問題 - 最終版
+// 獲取當前問題
 exports.getCurrentQuestion = async (req, res) => {
   try {
     const { gameId } = req.params;
@@ -157,38 +59,33 @@ exports.getCurrentQuestion = async (req, res) => {
       return res.status(400).json({ success: false, message: '遊戲不在活動狀態' });
     }
     
-    // 獲取當前問題編號
-    const currentQuestionNumber = game.currentQuestionNumber;
+    // 獲取當前問題
+    const currentQuestion = game.getCurrentQuestion();
     
-    // 查找當前遊戲問題
-    const gameQuestion = await GameQuestion.findOne({
-      gameId: game.gameId,
-      order: currentQuestionNumber
-    }).populate('questionId');
-    
-    if (!gameQuestion) {
+    if (!currentQuestion) {
       return res.status(404).json({ success: false, message: '找不到當前問題' });
     }
     
-    // 獲取問題數據
-    const questionData = gameQuestion.questionId;
-    const imageSetId = gameQuestion.imageSetId;
+    // 獲取圖片列表
+    const images = getImagesFromPath(currentQuestion.imagePath);
     
-    // 查找指定的圖片集
-    const imageSet = questionData.imageSets.find(set => set.setId === imageSetId);
-    
-    if (!imageSet) {
-      return res.status(404).json({ success: false, message: '找不到指定的圖片集' });
+    if (images.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: '找不到問題的圖片檔案',
+        imagePath: currentQuestion.imagePath
+      });
     }
     
-    // 返回所有必要的信息
+    // 返回問題資訊
     res.status(200).json({
       success: true,
-      questionId: gameQuestion._id,
-      questionOrder: gameQuestion.order,
-      images: imageSet.images,
-      animeTitle: questionData.animeTitle,
-      alternativeTitles: questionData.alternativeTitles
+      questionOrder: currentQuestion.order,
+      animeTitle: currentQuestion.animeTitle,
+      imagePath: currentQuestion.imagePath,
+      images: images,
+      totalQuestions: game.questions.length,
+      status: currentQuestion.status
     });
   } catch (error) {
     res.status(500).json({ 
@@ -199,7 +96,7 @@ exports.getCurrentQuestion = async (req, res) => {
   }
 };
 
-// 提交答案 - 最終極簡版，只更新累積分數
+// 提交答案
 exports.submitAnswer = async (req, res) => {
   try {
     const { gameId } = req.params;
@@ -253,7 +150,7 @@ exports.submitAnswer = async (req, res) => {
   }
 };
 
-// 開始下一個問題 - 超簡化版
+// 開始下一個問題
 exports.startNextQuestion = async (req, res) => {
   try {
     const { gameId } = req.params;
@@ -271,19 +168,18 @@ exports.startNextQuestion = async (req, res) => {
     
     // 獲取當前問題並標記為已完成
     if (game.currentQuestionNumber > 0) {
-      await GameQuestion.updateOne(
-        { gameId: game.gameId, order: game.currentQuestionNumber },
-        { status: 'completed' }
-      );
+      const currentQuestion = game.getCurrentQuestion();
+      if (currentQuestion) {
+        currentQuestion.status = 'completed';
+        currentQuestion.completedAt = new Date();
+      }
     }
     
     // 增加問題編號
     game.currentQuestionNumber += 1;
     
     // 檢查是否還有問題
-    const totalQuestions = await GameQuestion.countDocuments({ gameId: game.gameId });
-    
-    if (game.currentQuestionNumber > totalQuestions) {
+    if (game.currentQuestionNumber > game.questions.length) {
       // 結束遊戲
       game.status = 'finished';
       game.finishedAt = new Date();
@@ -292,8 +188,16 @@ exports.startNextQuestion = async (req, res) => {
       return res.status(200).json({
         success: true,
         message: '遊戲已結束',
-        gameComplete: true
+        gameComplete: true,
+        finalRankings: game.getRankedPlayers()
       });
+    }
+    
+    // 設置新的當前問題為活動狀態
+    const nextQuestion = game.getCurrentQuestion();
+    if (nextQuestion) {
+      nextQuestion.status = 'active';
+      nextQuestion.activatedAt = new Date();
     }
     
     await game.save();
@@ -302,7 +206,7 @@ exports.startNextQuestion = async (req, res) => {
       success: true,
       message: '開始下一個問題',
       questionNumber: game.currentQuestionNumber,
-      totalQuestions: totalQuestions
+      totalQuestions: game.questions.length
     });
   } catch (error) {
     res.status(500).json({ 
@@ -325,8 +229,7 @@ exports.getPlayerRankings = async (req, res) => {
     }
     
     // 按分數排序玩家，只返回名稱和總分
-    const rankings = game.players
-      .sort((a, b) => b.score - a.score)
+    const rankings = game.getRankedPlayers()
       .map((player, index) => ({
         rank: index + 1,
         username: player.username,
@@ -345,3 +248,30 @@ exports.getPlayerRankings = async (req, res) => {
     });
   }
 };
+
+// 獲取可用的動漫列表（用於管理）
+exports.getAvailableAnime = async (req, res) => {
+  try {
+    const animeData = loadAnimeData();
+    
+    const animeList = Object.keys(animeData).map(animeTitle => ({
+      title: animeTitle,
+      imageSetCount: animeData[animeTitle].images.length,
+      imagePaths: animeData[animeTitle].images
+    }));
+    
+    res.status(200).json({
+      success: true,
+      totalAnime: animeList.length,
+      animeList: animeList
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: '獲取動漫列表失敗',
+      error: error.message
+    });
+  }
+};
+
+module.exports = exports;
