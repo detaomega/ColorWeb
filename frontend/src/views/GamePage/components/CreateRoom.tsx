@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { ArrowLeft, Users, Crown } from "lucide-react";
 import type { Player, Room } from "../../../types/gameTypes";
-import { generateRoomCode } from "../../../utils/roomUtils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { createGame } from "@/services/gameService";
+import { addNewPlayers  } from "@/services/playerService"; // Add host player to gameID
 
 // import { createRoom } from "../api/CreateRoomApi";
 
@@ -34,7 +34,7 @@ const CreateRoom: React.FC<CreateRoomProps> = ({
         maxPointsPerQuestion: 100,
         rounds: 7
       },
-      hostId: player.nickname
+      hostId: player.username
     });
     
     
@@ -52,7 +52,7 @@ const CreateRoom: React.FC<CreateRoomProps> = ({
       isGameStarted: false,
       createdAt: new Date(),
     };
-
+    await addNewPlayers(roomCode, player.username)
     setIsCreating(false);
     onRoomCreated(newRoom);
   };
@@ -89,7 +89,7 @@ const CreateRoom: React.FC<CreateRoomProps> = ({
               <span>
                 房主：
                 <span className="font-semibold text-primary">
-                  {player.nickname}
+                  {player.username}
                 </span>
               </span>
             </div>

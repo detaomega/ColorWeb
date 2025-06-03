@@ -9,7 +9,7 @@ import { ArrowLeft, Users, Gamepad2 } from 'lucide-react';
 // Mock types (replace with your actual types)
 interface Player {
   id: string;
-  nickname: string;
+  username: string;
   isHost?: boolean;
   isReady?: boolean;
 }
@@ -36,10 +36,10 @@ const mockRooms: Room[] = [
   {
     id: "1",
     code: "ABC12345",
-    host: { id: "host1", nickname: "Alice" },
+    host: { id: "host1", username: "Alice" },
     players: [
-      { id: "host1", nickname: "Alice", isHost: true },
-      { id: "2", nickname: "Bob" },
+      { id: "host1", username: "Alice", isHost: true },
+      { id: "2", username: "Bob" },
     ],
     maxPlayers: 8,
     minPlayers: 3,
@@ -49,8 +49,8 @@ const mockRooms: Room[] = [
   {
     id: "2",
     code: "XYZ78912",
-    host: { id: "host2", nickname: "Charlie" },
-    players: [{ id: "host2", nickname: "Charlie", isHost: true }],
+    host: { id: "host2", username: "Charlie" },
+    players: [{ id: "host2", username: "Charlie", isHost: true }],
     maxPlayers: 6,
     minPlayers: 2,
     isGameStarted: false,
@@ -238,7 +238,7 @@ const JoinRoom: React.FC<JoinRoomProps> = ({
                           </Badge>
                         </div>
                         <p className="text-muted-foreground">
-                          房主: <span className="font-semibold">{room.host.nickname}</span>
+                          房主: <span className="font-semibold">{room.host.username}</span>
                         </p>
                       </div>
                       <Button

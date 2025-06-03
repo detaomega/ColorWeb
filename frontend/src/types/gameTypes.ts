@@ -1,5 +1,5 @@
 export type GameState =
-  | "nickname"
+  | "username"
   | "menu"
   | "createRoom"
   | "joinRoom"
@@ -8,7 +8,7 @@ export type GameState =
 
 export interface Player {
   id: string;
-  nickname: string;
+  username: string;
   isReady: boolean;
   isHost: boolean;
 }
@@ -64,6 +64,15 @@ export interface GameCreate {
   hostId: string;
 }
 
+export interface Players {
+  username: string;
+  score: number;
+  joinedAt: string;
+  rank?: number;  
+  isHost?: boolean;
+  isReady?: boolean;
+}
+
 export interface CreateGameResponse {
   success: boolean;
   message: string;
@@ -78,7 +87,7 @@ export interface CreateGameResponse {
       maxPointsPerQuestion: number;
       rounds: number;
     };
-    players: any[];
+    players: Players[];
     _id: string;
     createdAt: string;
     __v: number;
@@ -95,12 +104,7 @@ export interface GameInfo {
     maxPointsPerQuestion: number;
     rounds: number;
   };
-  players: Array<{
-    username: string;
-    score: number;
-    joinedAt: string;
-    rank: number;
-  }>;
+  players: Players[];
   currentQuestionNumber: number;
   startedAt: string;
   finishedAt: string | null;
@@ -108,3 +112,4 @@ export interface GameInfo {
   hostId: string;
   questionCount?: number;
 }
+

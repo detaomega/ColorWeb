@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import NicknameInput from "./components/NicknameInput";
+import UsernameInput from "./components/UsernameInput";
 import MainMenu from "./components/MainMenu";
 import CreateRoom from "./components/CreateRoom";
 import JoinRoom from "./components/JoinRoom";
@@ -7,16 +7,16 @@ import GameLobby from "./components/GameLobby";
 import type { GameState, Player, Room } from "../../types/gameTypes";
 
 const GamePage: React.FC = () => {
-  const [gameState, setGameState] = useState<GameState>("nickname");
-  const [nickname, setNickname] = useState<string>("");
+  const [gameState, setGameState] = useState<GameState>("username");
+  const [username, setusername] = useState<string>("");
   const [currentRoom, setCurrentRoom] = useState<Room | null>(null);
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
 
-  const handleNicknameSubmit = (inputNickname: string) => {
-    setNickname(inputNickname);
+  const handleusernameSubmit = (inputusername: string) => {
+    setusername(inputusername);
     setCurrentPlayer({
       id: Math.random().toString(36).substr(2, 9),
-      nickname: inputNickname,
+      username: inputusername,
       isReady: false,
       isHost: false,
     });
@@ -59,13 +59,13 @@ const GamePage: React.FC = () => {
 
   const renderCurrentScreen = () => {
     switch (gameState) {
-      case "nickname":
-        return <NicknameInput onSubmit={handleNicknameSubmit} />;
+      case "username":
+        return <UsernameInput onSubmit={handleusernameSubmit} />;
 
       case "menu":
         return (
           <MainMenu
-            nickname={nickname}
+            username={username}
             onCreateRoom={handleCreateRoom}
             onJoinRoom={handleJoinRoom}
           />
@@ -99,14 +99,6 @@ const GamePage: React.FC = () => {
           />
         );
 
-      case "game":
-        return (
-          <GameScreen
-            room={currentRoom!}
-            currentPlayer={currentPlayer!}
-            onBack={handleBackToMenu}
-          />
-        );
 
       default:
         return <div>載入中...</div>;

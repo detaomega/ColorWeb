@@ -4,19 +4,19 @@ import type { Room, Player } from "../types/gameTypes";
 const mockPlayers: Player[] = [
   {
     id: "player1",
-    nickname: "小明",
+    username: "小明",
     isReady: true,
     isHost: true,
   },
   {
     id: "player2",
-    nickname: "小美",
+    username: "小美",
     isReady: false,
     isHost: false,
   },
   {
     id: "player3",
-    nickname: "小華",
+    username: "小華",
     isReady: true,
     isHost: false,
   },
@@ -80,13 +80,13 @@ export const getAvailableRooms = (): Room[] => {
 
 /**
  * 生成隨機玩家
- * @param nickname 暱稱
+ * @param username 暱稱
  * @returns 玩家對象
  */
-export const createMockPlayer = (nickname: string): Player => {
+export const createMockPlayer = (username: string): Player => {
   return {
     id: Math.random().toString(36).substr(2, 9),
-    nickname,
+    username,
     isReady: false,
     isHost: false,
   };

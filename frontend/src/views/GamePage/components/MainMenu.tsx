@@ -5,13 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { Home, DoorOpen, Gamepad2 } from "lucide-react";
 
 interface MainMenuProps {
-  nickname: string;
+  username: string;
   onCreateRoom: () => void;
   onJoinRoom: () => void;
 }
 
 const MainMenu: React.FC<MainMenuProps> = ({
-  nickname,
+  username,
   onCreateRoom,
   onJoinRoom,
 }) => {
@@ -31,7 +31,7 @@ const MainMenu: React.FC<MainMenuProps> = ({
           </div>
           <h2 className="text-5xl font-bold tracking-tight">
             歡迎回來，
-            <span className="text-primary">{nickname}</span>！
+            <span className="text-primary">{username}</span>！
           </h2>
           <p className="text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             選擇你想要做的動作
