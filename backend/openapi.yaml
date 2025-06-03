@@ -1,13 +1,13 @@
 openapi: 3.0.3
 info:
   title: 動漫猜謎遊戲 API
-  description: 用於管理動漫猜謎遊戲的 API，包含遊戲創建、問題管理、玩家互動等功能
-  version: 1.0.0
+  description: 用於管理動漫猜謎遊戲的 API，包含遊戲創建、問題管理、玩家互動等功能。使用本地 anime_path.json 作為題目來源。
+  version: 2.0.0
 servers:
-  - url: https://api.example.com/v1
+  - url: http://localhost:3000/api
+    description: 本地開發環境
+  - url: https://api.example.com/api
     description: 生產環境
-  - url: https://staging-api.example.com/v1
-    description: 測試環境
 
 tags:
   - name: 遊戲管理
@@ -15,9 +15,63 @@ tags:
   - name: 玩家管理
     description: 添加玩家和獲取玩家排名相關操作
   - name: 問題管理
-    description: 創建和管理問題相關操作
+    description: 管理問題相關操作（基於本地動漫資料）
+  - name: 系統管理
+    description: 系統健康檢查和動漫資料管理
 
 paths:
+  # 系統相關
+  /:
+    get:
+      summary: API 根路徑
+      description: 檢查 API 是否正常運行
+      tags:
+        - 系統管理
+      responses:
+        '200':
+          description: API 正常運行
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "動漫猜謎遊戲 API 正在運行"
+
+  /health:
+    get:
+      summary: 健康檢查
+      description: 檢查 API 和動漫資料的健康狀態
+      tags:
+        - 系統管理
+      responses:
+        '200':
+          description: 系統健康
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "API 運行正常"
+                  animeCount:
+                    type: integer
+                    description: 可用動漫數量
+                    example: 16
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2025-06-03T10:30:00.000Z"
+        '500':
+          description: 系統異常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # 遊戲管理
   /games:
     post:
       summary: 創建新遊戲
@@ -118,7 +172,7 @@ paths:
   /games/{gameId}/settings:
     patch:
       summary: 更新遊戲設定
-      description: 更新指定遊戲的設定參數
+      description: 更新指定遊戲的設定參數（只能在遊戲開始前）
       tags:
         - 遊戲管理
       parameters:
@@ -285,7 +339,7 @@ paths:
   /games/{gameId}/start:
     post:
       summary: 開始遊戲
-      description: 將指定遊戲的狀態設為活動並開始第一個問題
+      description: 將指定遊戲的狀態設為活動並自動從本地資料選擇隨機問題
       tags:
         - 遊戲管理
       parameters:
@@ -317,7 +371,7 @@ paths:
                     description: 遊戲中的問題總數
                     example: 10
         '400':
-          description: 請求錯誤，可能是遊戲已開始、無玩家或無問題
+          description: 請求錯誤，可能是遊戲已開始、無玩家或動漫資料不足
           content:
             application/json:
               schema:
@@ -440,112 +494,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /questions:
-    post:
-      summary: 創建問題
-      description: 創建一個新的動漫問題
+  # 問題管理（基於本地資料）
+  /anime:
+    get:
+      summary: 獲取可用動漫列表
+      description: 獲取本地 anime_path.json 中的所有可用動漫
       tags:
         - 問題管理
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                animeTitle:
-                  type: string
-                  description: 動漫標題
-                  example: "Attack on Titan"
-                alternativeTitles:
-                  type: array
-                  description: 可選的動漫替代標題
-                  items:
-                    type: string
-                  example: ["進撃の巨人", "進擊的巨人"]
-                imageSets:
-                  type: array
-                  description: 包含圖片集的數組
-                  items:
-                    type: object
-                    properties:
-                      setId:
-                        type: string
-                        description: 圖片集ID (可選，如果未提供將自動生成)
-                        example: "set_123456"
-                      setName:
-                        type: string
-                        description: 圖片集名稱
-                        example: "Character Set 1"
-                      images:
-                        type: array
-                        description: 圖片URL列表
-                        items:
-                          type: string
-                          example: "https://example.com/image1.jpg"
-                        minItems: 3
-                  minItems: 1
-              required:
-                - animeTitle
-                - imageSets
-      responses:
-        '201':
-          description: 問題創建成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "動漫問題創建成功"
-                  question:
-                    $ref: '#/components/schemas/Question'
-        '400':
-          description: 請求錯誤，可能是缺少必要欄位或圖片集不符合要求
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: 伺服器錯誤
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  
-  /games/{gameId}/questions:
-    post:
-      summary: 添加問題到遊戲
-      description: 將問題添加到指定遊戲中
-      tags:
-        - 問題管理
-      parameters:
-        - name: gameId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: 遊戲唯一ID
-          example: "a1b2c3d4"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                count:
-                  type: integer
-                  description: 要添加的問題數量
-                  default: 10
-                  example: 10
       responses:
         '200':
-          description: 成功添加問題
+          description: 成功獲取動漫列表
           content:
             application/json:
               schema:
@@ -554,25 +512,31 @@ paths:
                   success:
                     type: boolean
                     example: true
-                  message:
-                    type: string
-                    example: "成功添加 10 個問題到遊戲"
-                  count:
+                  totalAnime:
                     type: integer
-                    description: 實際添加的問題數量
-                    example: 10
-        '400':
-          description: 請求錯誤，可能是遊戲已開始或無有效問題
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: 找不到遊戲或數據庫中沒有可用問題
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+                    description: 總動漫數量
+                    example: 16
+                  animeList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                          description: 動漫標題
+                          example: "Chainsaw Man"
+                        imageSetCount:
+                          type: integer
+                          description: 圖片集數量
+                          example: 4
+                        imagePaths:
+                          type: array
+                          description: 圖片資料夾路徑列表
+                          items:
+                            type: string
+                          example: 
+                            - ".\\create_data\\dataset\\Chainsaw Man\\Chainsaw Man_1"
+                            - ".\\create_data\\dataset\\Chainsaw Man\\Chainsaw Man_2"
         '500':
           description: 伺服器錯誤
           content:
@@ -583,7 +547,7 @@ paths:
   /games/{gameId}/question:
     get:
       summary: 獲取當前問題
-      description: 獲取指定遊戲的當前問題
+      description: 獲取指定遊戲的當前問題和圖片
       tags:
         - 問題管理
       parameters:
@@ -605,30 +569,35 @@ paths:
                   success:
                     type: boolean
                     example: true
-                  questionId:
-                    type: string
-                    description: 問題唯一ID
-                    example: "5f8d5a....."
                   questionOrder:
                     type: integer
                     description: 問題順序編號
                     example: 1
-                  images:
-                    type: array
-                    description: 圖片URL列表
-                    items:
-                      type: string
-                      example: "https://example.com/image1.jpg"
                   animeTitle:
                     type: string
                     description: 動漫標題
-                    example: "Attack on Titan"
-                  alternativeTitles:
+                    example: "Chainsaw Man"
+                  imagePath:
+                    type: string
+                    description: 圖片資料夾路徑
+                    example: ".\\create_data\\dataset\\Chainsaw Man\\Chainsaw Man_1"
+                  images:
                     type: array
-                    description: 動漫替代標題
+                    description: 圖片檔案完整路徑列表
                     items:
                       type: string
-                    example: ["進撃の巨人", "進擊的巨人"]
+                    example: 
+                      - "C:\\project\\create_data\\dataset\\Chainsaw Man\\Chainsaw Man_1\\image1.jpg"
+                      - "C:\\project\\create_data\\dataset\\Chainsaw Man\\Chainsaw Man_1\\image2.jpg"
+                  totalQuestions:
+                    type: integer
+                    description: 問題總數
+                    example: 10
+                  status:
+                    type: string
+                    description: 問題狀態
+                    enum: [pending, active, completed]
+                    example: "active"
         '400':
           description: 請求錯誤，可能是遊戲不在活動狀態
           content:
@@ -636,7 +605,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: 找不到遊戲、問題或圖片集
+          description: 找不到遊戲、問題或圖片檔案
           content:
             application/json:
               schema:
@@ -664,30 +633,44 @@ paths:
           example: "a1b2c3d4"
       responses:
         '200':
-          description: 成功切換到下一個問題
+          description: 成功切換到下一個問題或遊戲結束
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "開始下一個問題"
-                  questionNumber:
-                    type: integer
-                    description: 新的問題編號
-                    example: 2
-                  totalQuestions:
-                    type: integer
-                    description: 問題總數
-                    example: 10
-                  gameComplete:
-                    type: boolean
-                    description: 如果是最後一個問題，此字段為true
-                    example: false
+                oneOf:
+                  - type: object
+                    description: 成功開始下一題
+                    properties:
+                      success:
+                        type: boolean
+                        example: true
+                      message:
+                        type: string
+                        example: "開始下一個問題"
+                      questionNumber:
+                        type: integer
+                        description: 新的問題編號
+                        example: 2
+                      totalQuestions:
+                        type: integer
+                        description: 問題總數
+                        example: 10
+                  - type: object
+                    description: 遊戲結束
+                    properties:
+                      success:
+                        type: boolean
+                        example: true
+                      message:
+                        type: string
+                        example: "遊戲已結束"
+                      gameComplete:
+                        type: boolean
+                        example: true
+                      finalRankings:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PlayerRanking'
         '400':
           description: 請求錯誤，可能是遊戲不在活動狀態
           content:
@@ -710,7 +693,7 @@ paths:
   /games/{gameId}/question/answer:
     post:
       summary: 提交答案
-      description: 提交玩家對當前問題的答案
+      description: 提交玩家對當前問題的答案和分數
       tags:
         - 問題管理
       parameters:
@@ -735,7 +718,7 @@ paths:
                 score:
                   type: integer
                   description: 本題獲得的分數
-                  example: 100
+                  example: 85
               required:
                 - username
                 - score
@@ -756,11 +739,11 @@ paths:
                   score:
                     type: integer
                     description: 本題獲得的分數
-                    example: 100
+                    example: 85
                   totalScore:
                     type: integer
                     description: 玩家總分
-                    example: 300
+                    example: 285
         '400':
           description: 請求錯誤，可能是缺少必要欄位或遊戲不在活動狀態
           content:
@@ -783,7 +766,7 @@ paths:
   /games/{gameId}/rankings:
     get:
       summary: 獲取玩家排名
-      description: 獲取指定遊戲中玩家的排名
+      description: 獲取指定遊戲中玩家的即時排名
       tags:
         - 玩家管理
       parameters:
@@ -847,6 +830,11 @@ components:
           description: 遊戲玩家列表
           items:
             $ref: '#/components/schemas/Player'
+        questions:
+          type: array
+          description: 遊戲問題列表
+          items:
+            $ref: '#/components/schemas/GameQuestion'
         currentQuestionNumber:
           type: integer
           description: 當前問題編號 (1-based)
@@ -855,7 +843,7 @@ components:
           type: string
           format: date-time
           description: 遊戲開始時間
-          example: "2025-05-20T10:30:00Z"
+          example: "2025-06-03T10:30:00Z"
         finishedAt:
           type: string
           format: date-time
@@ -865,7 +853,7 @@ components:
           type: string
           format: date-time
           description: 遊戲創建時間
-          example: "2025-05-20T10:00:00Z"
+          example: "2025-06-03T10:00:00Z"
         hostId:
           type: string
           description: 主持人ID
@@ -905,13 +893,13 @@ components:
         score:
           type: integer
           description: 玩家當前分數
-          example: 300
+          example: 285
           default: 0
         joinedAt:
           type: string
           format: date-time
           description: 玩家加入時間
-          example: "2025-05-20T10:15:00Z"
+          example: "2025-06-03T10:15:00Z"
     
     PlayerRanking:
       type: object
@@ -927,84 +915,29 @@ components:
         score:
           type: integer
           description: 玩家分數
-          example: 300
-    
-    Question:
-      type: object
-      properties:
-        _id:
-          type: string
-          description: 問題唯一ID
-          example: "5f8d5a....."
-        animeTitle:
-          type: string
-          description: 動漫標題
-          example: "Attack on Titan"
-        alternativeTitles:
-          type: array
-          description: 動漫替代標題
-          items:
-            type: string
-          example: ["進撃の巨人", "進擊的巨人"]
-        imageSets:
-          type: array
-          description: 圖片集列表
-          items:
-            $ref: '#/components/schemas/ImageSet'
-        createdAt:
-          type: string
-          format: date-time
-          description: 問題創建時間
-          example: "2025-05-15T08:00:00Z"
-    
-    ImageSet:
-      type: object
-      properties:
-        setId:
-          type: string
-          description: 圖片集唯一ID
-          example: "set_123456"
-        setName:
-          type: string
-          description: 圖片集名稱
-          example: "Character Set 1"
-        images:
-          type: array
-          description: 圖片URL列表
-          items:
-            type: string
-            example: "https://example.com/image1.jpg"
-          minItems: 3
+          example: 285
     
     GameQuestion:
       type: object
+      description: 遊戲中的問題（內嵌在遊戲文件中）
       properties:
-        gameId:
+        animeTitle:
           type: string
-          description: 遊戲ID
-          example: "a1b2c3d4"
-        questionId:
+          description: 動漫名稱
+          example: "Chainsaw Man"
+        imagePath:
           type: string
-          description: 問題ID
-          example: "5f8d5a....."
-        imageSetId:
-          type: string
-          description: 所選圖片集ID
-          example: "set_123456"
+          description: 使用的圖片資料夾路徑
+          example: ".\\create_data\\dataset\\Chainsaw Man\\Chainsaw Man_1"
         order:
           type: integer
-          description: 問題順序
+          description: 問題在遊戲中的順序
           example: 1
         status:
           type: string
           description: 問題狀態
           enum: [pending, active, completed]
           example: "pending"
-        currentImageIndex:
-          type: integer
-          description: 當前顯示的圖片索引
-          example: -1
-          default: -1
         activatedAt:
           type: string
           format: date-time
@@ -1015,11 +948,6 @@ components:
           format: date-time
           description: 問題完成的時間
           example: null
-        timeLimit:
-          type: integer
-          description: 此問題的時間限制（秒）
-          default: 60
-          example: 60
     
     GameStats:
       type: object
@@ -1028,22 +956,10 @@ components:
           type: integer
           description: 遊戲問題總數
           example: 10
-        totalAnswers:
-          type: integer
-          description: 總回答次數
-          example: 50
-        correctAnswers:
-          type: integer
-          description: 正確回答次數
-          example: 35
-        correctPercentage:
-          type: integer
-          description: 正確率百分比
-          example: 70
         averageScore:
           type: integer
           description: 平均分數
-          example: 250
+          example: 220
         gameDuration:
           type: integer
           description: 遊戲持續時間（秒）

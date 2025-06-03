@@ -1,9 +1,173 @@
-// controllers/gamecontroller.js
+// controllers/gameController.js
 const Game = require('../db_structures/game');
-const GameQuestion = require('../db_structures/gameQuestion');
-const Question = require('../db_structures/question');
-const { customAlphabet } = require('nanoid');
-const { getIo } = require('../socketServer');
+const { nanoid } = require('nanoid');
+const fs = require('fs');
+const path = require('path');
+
+// 在 gameController.js 最頂部加入這個
+console.log('=== 啟動時路徑檢查 ===');
+console.log('__dirname:', __dirname);
+const testPath = path.join(__dirname, '../anime_path.json');
+console.log('測試路徑:', testPath);
+console.log('檔案存在:', fs.existsSync(testPath));
+
+if (fs.existsSync(testPath)) {
+  try {
+    const testData = JSON.parse(fs.readFileSync(testPath, 'utf8'));
+    console.log('✅ 檔案讀取成功，動漫數量:', Object.keys(testData).length);
+  } catch (e) {
+    console.log('❌ 檔案讀取失敗:', e.message);
+  }
+} else {
+  console.log('❌ 檔案不存在，檢查這些位置:');
+  [
+    path.join(__dirname, '../anime_path.json'),
+    path.join(__dirname, '../../anime_path.json'),
+    path.join(__dirname, '../../../anime_path.json')
+  ].forEach(p => {
+    console.log(`  ${p}: ${fs.existsSync(p) ? '存在' : '不存在'}`);
+  });
+}
+
+// 讀取動漫資料
+function loadAnimeData() {
+  try {
+    const dataPath = path.join(__dirname, '../anime_path.json');
+    const rawData = fs.readFileSync(dataPath, 'utf8');
+    return JSON.parse(rawData);
+  } catch (error) {
+    console.error('讀取動漫資料失敗:', error);
+    return {};
+  }
+}
+
+// 隨機選擇遊戲問題（增強版 - 包含答案讀取）
+function selectRandomQuestions(animeData, count = 10) {
+  const animeList = Object.keys(animeData);
+  
+  if (animeList.length < count) {
+    throw new Error(`資料庫中只有 ${animeList.length} 部動漫，無法選擇 ${count} 題`);
+  }
+  
+  // 隨機打亂動漫列表
+  const shuffledAnime = animeList.sort(() => Math.random() - 0.5);
+  
+  // 選擇前 count 部動漫（確保不重複）
+  const selectedAnime = shuffledAnime.slice(0, count);
+  
+  // 為每部動漫隨機選擇一個圖片集並讀取答案
+  const questions = selectedAnime.map((animeTitle, index) => {
+    const imagePaths = animeData[animeTitle].images;
+    const randomImagePath = imagePaths[Math.floor(Math.random() * imagePaths.length)];
+    
+    // 讀取答案檔案
+    const answer = readAnswerFile(randomImagePath);
+    
+    return {
+      animeTitle: animeTitle,
+      imagePath: randomImagePath,
+      answer: answer, // 新增答案欄位
+      order: index + 1,
+      status: 'pending'
+    };
+  });
+  const deadQuestions = [
+      {
+        "animeTitle": "Chainsaw Man",
+        "imagePath": "./create_data/dataset_resized/Chainsaw Man/Chainsaw Man_1",
+        "order": 1,
+        "answer": "鍊鋸人",
+        "status": "pending",
+      },
+      {
+        "animeTitle": "Charlotte",
+        "imagePath": "./create_data/dataset_resized/Charlotte/Charlotte_1",
+        "order": 2,
+        "answer": "夏洛特",
+        "status": "pending",
+      },
+      {
+        "animeTitle": "No Game No Life",
+        "imagePath": "./create_data/dataset_resized/no game no life/no game no life_2",
+        "order": 3,
+        "answer": "遊戲人生",
+        "status": "pending",
+      },
+      {
+        "animeTitle": "Frieren",
+        "imagePath": "./create_data/dataset_resized/Frieren/Frieren_4",
+        "order": 4,
+        "answer": "葬送的芙莉蓮",
+        "status": "pending",
+      },
+      {
+        "animeTitle": "Tokyo Ghoul",
+        "imagePath": "./create_data/dataset_resized/Tokyo Ghoul/Tokyo Ghoul_1",
+        "order": 5,
+        "answer": "東京喰種",
+        "status": "pending",
+      },
+      {
+        "animeTitle": "Fairy Tail",
+        "imagePath": "./create_data/dataset_resized/Fairy tail/Fairy tail_2",
+        "order": 6,
+        "answer": "妖精的尾巴",
+        "status": "pending",
+      },
+      {
+        "animeTitle": "One Punch Man",
+        "imagePath": "./create_data/dataset_resized/one punch/one punch_1",
+        "order": 7,
+        "answer": "一拳超人",
+        "status": "pending",
+      }
+    ];
+
+  return deadQuestions;
+}
+
+// 讀取答案檔案的函數
+function readAnswerFile(imagePath) {
+  try {
+    // 將相對路徑轉換為絕對路徑
+    const absoluteImagePath = path.resolve(imagePath);
+    console.log('🔍 解析圖片路徑:', absoluteImagePath);
+    
+    // 取得圖片資料夾的父目錄（動漫資料夾）
+    const animeDirectory = path.dirname(absoluteImagePath);
+    console.log('🔍 尋找答案檔案的動漫資料夾:', animeDirectory);
+    
+    // 構建 answer.txt 的路徑
+    const answerFilePath = path.join(animeDirectory, 'answer.txt');
+    
+    console.log('🔍 尋找答案檔案:', answerFilePath);
+    
+    // 檢查檔案是否存在
+    if (!fs.existsSync(answerFilePath)) {
+      console.warn('⚠️ 答案檔案不存在:', answerFilePath);
+      return null; // 或返回預設值
+    }
+    
+    // 讀取並處理答案檔案
+    const answerContent = fs.readFileSync(answerFilePath, 'utf8').trim();
+    
+    console.log('✅ 成功讀取答案:', answerContent);
+    
+    // 如果答案檔案包含多行，可以用分號或換行分割
+    const answers = answerContent.split(/[;\n]/).map(ans => ans.trim()).filter(ans => ans.length > 0);
+    
+    return {
+      primary: answers[0] || answerContent, // 主要答案
+      alternatives: answers.slice(1) || []   // 替代答案
+    };
+    
+  } catch (error) {
+    console.error('❌ 讀取答案檔案失敗:', error.message);
+    console.error('❌ 圖片路徑:', imagePath);
+    return null;
+  }
+}
+
 // 創建新遊戲
 exports.createGame = async (req, res) => {
   try {
@@ -12,7 +176,6 @@ exports.createGame = async (req, res) => {
       settings,
       hostId
     } = req.body;
-    const nanoid = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 8);
     const gameId = nanoid(8); // 生成唯一遊戲ID
     
     // 創建遊戲，可選設定
@@ -21,7 +184,7 @@ exports.createGame = async (req, res) => {
       gameTitle: gameTitle || "Anime Guessing Game",
       settings: settings || {},
       players: [], // 初始化空的玩家列表
-      hostId: hostId
+      questions: [] // 初始化空的問題列表
     });
     
     await game.save();
@@ -55,7 +218,7 @@ exports.getGame = async (req, res) => {
     }
     
     // 獲取問題數量
-    const questionCount = await GameQuestion.countDocuments({ gameId });
+    const questionCount = game.questions.length;
     
     // 排序玩家
     const rankedPlayers = game.getRankedPlayers();
@@ -165,8 +328,7 @@ exports.addPlayer = async (req, res) => {
     // 新增玩家
     game.players.push({
       username,
-      score: 0,
-      answers: []
+      score: 0
     });
     
     await game.save();
@@ -216,41 +378,38 @@ exports.startGame = async (req, res) => {
       });
     }
     
-    // 檢查是否有問題
-    const questionCount = await GameQuestion.countDocuments({ gameId });
-    
-    if (questionCount === 0) {
+    try {
+      // 讀取動漫資料並選擇問題
+      const animeData = loadAnimeData();
+      const selectedQuestions = selectRandomQuestions(animeData, game.settings.rounds);
+      
+      // 將問題加入遊戲
+      game.questions = selectedQuestions;
+      
+      // 更新遊戲狀態
+      game.status = 'active';
+      game.startedAt = new Date();
+      game.currentQuestionNumber = 1; // 從第一個問題開始
+      
+      // 設置第一個問題為待命狀態
+      if (game.questions.length > 0) {
+        game.questions[0].status = 'pending';
+      }
+      
+      await game.save();
+      
+      res.status(200).json({
+        success: true,
+        message: '遊戲已開始',
+        game: game,
+        totalQuestions: game.questions.length
+      });
+    } catch (error) {
       return res.status(400).json({
         success: false,
-        message: '遊戲需要至少一個問題才能開始'
+        message: error.message
       });
     }
-    
-    // 更新遊戲狀態
-    game.status = 'active';
-    game.startedAt = new Date();
-    game.currentQuestionNumber = 1; // 從第一個問題開始
-    
-    await game.save();
-    
-    // 初始化第一個問題
-    const firstQuestion = await GameQuestion.findOne({
-      gameId: game.gameId,
-      order: 1
-    });
-    
-    if (firstQuestion) {
-      firstQuestion.status = 'pending';
-      firstQuestion.currentImageIndex = -1; // 開始前沒有圖片顯示
-      await firstQuestion.save();
-    }
-    
-    res.status(200).json({
-      success: true,
-      message: '遊戲已開始',
-      game: game,
-      totalQuestions: questionCount
-    });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -330,24 +489,9 @@ exports.getGameResults = async (req, res) => {
     // 獲取玩家排名
     const rankedPlayers = game.getRankedPlayers();
     
-    // 獲取問題和答案
-    const gameQuestions = await GameQuestion.find({ gameId })
-      .sort({ order: 1 })
-      .populate('questionId');
-    
-    // 計算統計資料
-    const totalAnswers = game.players.reduce((sum, player) => sum + player.answers.length, 0);
-    const correctAnswers = game.players.reduce((sum, player) => 
-      sum + player.answers.filter(a => a.isCorrect).length, 0);
-    
     // 遊戲統計資料
     const gameStats = {
-      totalQuestions: gameQuestions.length,
-      totalAnswers: totalAnswers,
-      correctAnswers: correctAnswers,
-      correctPercentage: totalAnswers > 0 
-        ? Math.round((correctAnswers / totalAnswers) * 100) 
-        : 0,
+      totalQuestions: game.questions.length,
       averageScore: rankedPlayers.length > 0
         ? Math.round(rankedPlayers.reduce((sum, p) => sum + p.score, 0) / rankedPlayers.length)
         : 0,
