@@ -2,16 +2,17 @@
 const Game = require('../db_structures/game');
 const GameQuestion = require('../db_structures/gameQuestion');
 const Question = require('../db_structures/question');
-const { nanoid } = require('nanoid');
-
+const { customAlphabet } = require('nanoid');
+const { getIo } = require('../socketServer');
 // 創建新遊戲
 exports.createGame = async (req, res) => {
   try {
     const { 
       gameTitle,
-      settings 
+      settings,
+      hostId
     } = req.body;
-    
+    const nanoid = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 8);
     const gameId = nanoid(8); // 生成唯一遊戲ID
     
     // 創建遊戲，可選設定
@@ -19,7 +20,8 @@ exports.createGame = async (req, res) => {
       gameId: gameId,
       gameTitle: gameTitle || "Anime Guessing Game",
       settings: settings || {},
-      players: [] // 初始化空的玩家列表
+      players: [], // 初始化空的玩家列表
+      hostId: hostId
     });
     
     await game.save();
@@ -385,10 +387,10 @@ exports.getPlayers = async (req, res) => {
     
     // 獲取玩家排名
     const rankedPlayers = game.getRankedPlayers();
-    
     res.status(200).json({
       success: true,
-      players: rankedPlayers
+      players: rankedPlayers,
+      hostId: game.hostId
     });
   } catch (error) {
     res.status(500).json({
@@ -398,5 +400,9 @@ exports.getPlayers = async (req, res) => {
     });
   }
 };
+
+// 得到所有的 Game
+
+
 
 module.exports = exports;

@@ -1,5 +1,5 @@
 export type GameState =
-  | "nickname"
+  | "username"
   | "menu"
   | "createRoom"
   | "joinRoom"
@@ -8,20 +8,23 @@ export type GameState =
 
 export interface Player {
   id: string;
-  nickname: string;
-  isReady: boolean;
-  isHost: boolean;
+  username: string;
+  isReady?: boolean;
+  isHost?: boolean;
+  score?: number;
+  joinedAt?: string;
+  rank?: number;
 }
 
 export interface Room {
-  id: string;
+  id?: string;
   code: string;
-  host: Player;
+  host?: Player;
   players: Player[];
-  maxPlayers: number;
-  minPlayers: number;
-  isGameStarted: boolean;
-  createdAt: Date;
+  maxPlayers?: number;
+  minPlayers?: number;
+  isGameStarted?: boolean;
+  createdAt?: Date;
 }
 
 export interface GameConfig {
@@ -51,4 +54,55 @@ export interface AnswerResult {
   score: number;
   totalScore: number;
   message?: string;
+}
+
+export interface GameCreate {
+  gameTitle: string;
+  settings: {
+    revealInterval: number;
+    answerTime: number;
+    maxPointsPerQuestion: number;
+    rounds: number;
+  };
+  hostId: string;
+}
+
+export interface CreateGameResponse {
+  success: boolean;
+  message: string;
+  game: {
+    gameId: string;
+    gameTitle: string;
+    status: string;
+    currentQuestionNumber: number;
+    settings: {
+      revealInterval: number;
+      answerTime: number;
+      maxPointsPerQuestion: number;
+      rounds: number;
+    };
+    players: Player[];
+    _id: string;
+    createdAt: string;
+    __v: number;
+  };
+}
+
+export interface GameInfo {
+  gameId: string;
+  gameTitle: string;
+  status: string;
+  settings: {
+    revealInterval: number;
+    answerTime: number;
+    maxPointsPerQuestion: number;
+    rounds: number;
+  };
+  players: Player[];
+  currentQuestionNumber: number;
+  startedAt: string;
+  finishedAt: string | null;
+  createdAt: string;
+  hostId: string;
+  questionCount?: number;
 }
