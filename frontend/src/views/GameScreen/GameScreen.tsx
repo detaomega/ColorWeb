@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Users, Send, Loader2, Timer, Star } from "lucide-react";
+import { Send, Loader2, Timer, Star } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,22 +42,21 @@ const QuizGameComponent = () => {
   const gameId = location.state?.gameId;
   const username = location.state?.username;
   console.log(gameId);
-  const [totalPlayers] = useState(4);
-  const [totalQuestions] = useState(2);
-  const [completedPlayers, setCompletedPlayers] = useState(0);
+  const [totalQuestions] = useState(3);
+  const [setCompletedPlayers] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   // ##############玩家個人遊戲基本資料##############
   const [gameState, setGameState] = useState<PlayerState>("waiting");
-  const [timeLeft, setTimeLeft] = useState(6);
+  const [timeLeft, setTimeLeft] = useState(6 * 7);
   const [userAnswer, setUserAnswer] = useState("");
   const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1);
   const [currentScore, setCurrentScore] = useState(0);
-  const [rankings, setRankings] = useState<PlayerRanking[]>([]);
+  const [setRankings] = useState<PlayerRanking[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [answerFeedback, setAnswerFeedback] = useState<string | null>(null);
+  const [setAnswerFeedback] = useState<string | null>(null);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
-  const [apiError, setApiError] = useState<string | null>(null);
+  const [setApiError] = useState<string | null>(null);
   const [wrongAttempts, setWrongAttempts] = useState(0);
   // ##############後端API基礎##############
   const apiCall = async (url: string, options?: RequestInit) => {
@@ -77,7 +76,6 @@ const QuizGameComponent = () => {
       return await response.json();
     } catch (error) {
       console.error("API調用失敗:", error);
-      setApiError(error instanceof Error ? error.message : "未知錯誤");
       throw error;
     }
   };
@@ -101,7 +99,25 @@ const QuizGameComponent = () => {
         answer: "鍊鋸人",
       };
       setCurrentQuestion(mockQuestion);
-    } else {
+    }
+    else if (idx == 2) {
+      const mockQuestion: Question = {
+        id: `question-${currentQuestionNumber}`,
+        images: [
+          "/api/data/dataset_resized/ship/1.jpg",
+          "/api/data/dataset_resized/ship/2.jpg",
+          "/api/data/dataset_resized/ship/3.jpg",
+          "/api/data/dataset_resized/ship/4.jpg",
+          "/api/data/dataset_resized/ship/5.jpg",
+          "/api/data/dataset_resized/ship/6.jpg",
+          "/api/data/dataset_resized/ship/7.jpg"
+        ],
+        original: "/api/data/dataset_resized/ship/original.jpg",
+        answer: "海賊王",
+      };
+      setCurrentQuestion(mockQuestion);
+    } 
+    else{
       const mockQuestion: Question = {
         id: `question-${currentQuestionNumber}`,
         images: [
@@ -120,11 +136,9 @@ const QuizGameComponent = () => {
     }
 
     setCurrentImageIndex(0);
-    setTimeLeft(6);
+    setTimeLeft(42);
     setUserAnswer("");
-    setCompletedPlayers(0);
     setWrongAttempts(0);
-    setAnswerFeedback(null);
     setIsAnswerCorrect(false);
     setGameState("playing");
   
@@ -180,7 +194,6 @@ const QuizGameComponent = () => {
     if (gameState !== "playing") return;
 
     console.log("時間到！");
-    setAnswerFeedback("時間到！進入下一題");
     setGameState("loading");
 
     setTimeout(async () => {
@@ -218,8 +231,6 @@ const QuizGameComponent = () => {
 
       if (result.correct) {
         setIsAnswerCorrect(true);
-        setAnswerFeedback(result.message || "恭喜答對！");
-        setCompletedPlayers((prev) => prev + 1);
         await updateScore(gameId, username, result.score);
         // setGameState("loading");
 
@@ -233,14 +244,10 @@ const QuizGameComponent = () => {
         // }, 3000);
       } else {
         setWrongAttempts((prev) => prev + 1);
-        setAnswerFeedback(
-          result.message || `答案錯誤！這是第 ${wrongAttempts + 1} 次錯誤嘗試`,
-        );
         setUserAnswer("");
       }
     } catch (error) {
       console.error("提交答案過程出錯:", error);
-      setAnswerFeedback("提交答案時發生錯誤，請重試");
     } finally {
       setIsSubmitting(false);
     }
@@ -256,7 +263,7 @@ const QuizGameComponent = () => {
 
   const submitAnswerAndGetScore = (answer: string) => {
     const isCorrect = (answer == currentQuestion?.answer);
-    const score = isCorrect ? Math.ceil(200 * timeLeft / 49) : 0;
+    const score = isCorrect ? Math.ceil(200 * timeLeft / 42) : 0;
     return {
       correct: isCorrect,
       score: score,
@@ -269,9 +276,7 @@ const QuizGameComponent = () => {
     setCurrentQuestionNumber(1);
     setCurrentScore(0);
     setWrongAttempts(0);
-    setAnswerFeedback(null);
     setIsAnswerCorrect(false);
-    setApiError(null);
     fetchQuestion(1);
   };
 
@@ -282,13 +287,6 @@ const QuizGameComponent = () => {
       setRankings(rankingsData);
     } catch (error) {
       console.error("獲取排名失敗:", error);
-      const mockRankings: PlayerRanking[] = [
-        { playerId: "1", playerName: "玩家1", score: currentScore, rank: 1 },
-        { playerId: "2", playerName: "玩家2", score: 0, rank: 2 },
-        { playerId: "3", playerName: "玩家3", score: 0, rank: 3 },
-        { playerId: "4", playerName: "玩家4", score: 0, rank: 4 },
-      ];
-      setRankings(mockRankings);
     }
   };
 
@@ -380,7 +378,7 @@ const QuizGameComponent = () => {
 
             {/* 進度條 */}
             <Progress
-              value={((6 - timeLeft) / 6) * 100}
+              value={((42 - timeLeft) / 42) * 100}
               className="h-4 bg-slate-200"
             />
           </CardContent>
