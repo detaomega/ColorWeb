@@ -1,9 +1,8 @@
 // controllers/gameController.js
 const Game = require('../db_structures/game');
-const { nanoid } = require('nanoid');
 const fs = require('fs');
 const path = require('path');
-
+const { customAlphabet } = require('nanoid');
 // 在 gameController.js 最頂部加入這個
 console.log('=== 啟動時路徑檢查 ===');
 console.log('__dirname:', __dirname);
@@ -121,7 +120,7 @@ function selectRandomQuestions(animeData, count = 10) {
         "answer": "一拳超人",
         "status": "pending",
       }
-    ];
+  ];
 
   return deadQuestions;
 }
@@ -176,15 +175,16 @@ exports.createGame = async (req, res) => {
       settings,
       hostId
     } = req.body;
+    const nanoid = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 8);
     const gameId = nanoid(8); // 生成唯一遊戲ID
-    
     // 創建遊戲，可選設定
     const game = new Game({
       gameId: gameId,
       gameTitle: gameTitle || "Anime Guessing Game",
       settings: settings || {},
       players: [], // 初始化空的玩家列表
-      questions: [] // 初始化空的問題列表
+      questions: [], // 初始化空的問題列表
+      hostId: hostId
     });
     
     await game.save();

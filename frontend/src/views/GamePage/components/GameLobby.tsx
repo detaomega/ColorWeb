@@ -6,6 +6,7 @@ import { ArrowLeft, Copy, Check, Users, Crown, Clock } from "lucide-react";
 import { io, Socket } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 import type { Player, Room } from "@/types/gameTypes";
+import { startGame } from "@/services/gameService";
 // Mock types (replace with your actual types)
 
 interface GameLobbyProps {
@@ -28,6 +29,7 @@ const GameLobby: React.FC<GameLobbyProps> = ({
   // Finish web socket to get user information.
   useEffect(() => {
     setGameId(room.code ?? "");
+    console.log("Player", currentPlayer);
     // 創建 socket 連接時指定更多選項
     socketRef.current = io("/", {
       transports: ["websocket", "polling"],
@@ -66,16 +68,17 @@ const GameLobby: React.FC<GameLobbyProps> = ({
       setLocalRoom((prevRoom) => ({ ...prevRoom, players: allPlayers }));
     });
     socketRef.current.on("start-game", () => {
-      navigate("/game", { state: { gameId }, }); 
+      navigate("/game", { state: { gameId, username: currentPlayer.username }, });
     });
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
       }
     };
-  }, [gameId, localRoom.code, room.code]);
-  const requestGameStart = () => {
+  }, [gameId, localRoom.code, room.code, navigate]);
+  const requestGameStart = async () => {
     if (socketRef.current && currentPlayer.isHost) {
+      await startGame(gameId);
       socketRef.current.emit("request-game-start", { gameId });
     }
   };

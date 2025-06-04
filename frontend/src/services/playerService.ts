@@ -21,3 +21,13 @@ export const getAllPlayers = async (GameId: string) => {
     throw new Error(errorData.error || "讀取失敗");
   }
 };
+
+export const getRankings = async (GameId: string) => {
+  const response = await fetch(`/api/games/${GameId}/rankings`);
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "讀取排名失敗");
+  }
+  const data = await response.json();
+  return data.rankings;
+};
