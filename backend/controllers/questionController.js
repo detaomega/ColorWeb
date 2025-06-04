@@ -76,17 +76,18 @@ exports.getCurrentQuestion = async (req, res) => {
         imagePath: currentQuestion.imagePath
       });
     }
-    
+    const Questions = [
+      {
+        "imagePath": "./create_data/dataset_resized/Chainsaw Man/Chainsaw Man_1",
+        "answer": "鍊鋸人",
+      },
+      {
+        "imagePath": "./create_data/dataset_resized/Charlotte/Charlotte_1",
+        "answer": "夏洛特",
+      }
+  ];
     // 返回問題資訊
-    res.status(200).json({
-      success: true,
-      questionOrder: currentQuestion.order,
-      animeTitle: currentQuestion.animeTitle,
-      imagePath: currentQuestion.imagePath,
-      images: images,
-      totalQuestions: game.questions.length,
-      status: currentQuestion.status
-    });
+    res.status(200).json(Questions);
   } catch (error) {
     res.status(500).json({ 
       success: false, 
